@@ -31,6 +31,7 @@ import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockUseHandler;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
+import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import io.github.thebusybiscuit.slimefun4.implementation.items.misc.CoolantCell;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
@@ -49,13 +50,17 @@ import net.md_5.bungee.api.ChatColor;
 
 public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements EnergyNetComponent, ETInventoryBlock{
 	
-	public final static int[] inputs = {19,28,37};
-	public final static int[] outputs = {25,34,43};
+	public final static int[] inputs = {19,28,37,25,34,43};
+	public final static int[] inputs_coolant = {19,28,37};
+	public final static int[] inputs_uran = {25,34,43};
+	public final static int[] outputs = {};
 	public final int[] border = {0,1,2,3,4,5,6,7,8};
-	public final int[] inputBorder = {9,10,11,18,20,27,29,36,38,45,46,47};
-	public final int[] outputBorder = {15,16,17,24,26,33,35,42,44,51,52,53};
+	public final int[] inputBorder = {9,11,18,20,27,29,36,38,45,46,47};
+	public final int[] outputBorder = {15,17,24,26,33,35,42,44,51,52,53};
 	private int uniqueTick = 0;
 	public final static int maxcoolant = 128;
+	public final static int maxuran = 64;
+	private final static Vector[] vectors= {new Vector(0,0,1),new Vector(1,0,2),new Vector(0,0,3),new Vector(-1,0,2)};
 
 	
 	private final Map<Vector, SlimefunItemStack> blocks;
@@ -89,49 +94,130 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			
 			@Override
 			public void tick(Block b, SlimefunItem item, Config data) {
-				BlockMenu menu = BlockStorage.getInventory(b);
 				Location l = b.getLocation();
+				
+				BlockMenu menu = BlockStorage.getInventory(b);
+				
 				if(uniqueTick==5) {
 					uniqueTickk(b, menu);
 				}
-				
 				final String isBuild = BlockStorage.getLocationInfo(l,"build");
 				final int coolant = Integer.parseInt(BlockStorage.getLocationInfo(l, "coolant").replaceAll("[^0-9]", ""));
+				final int uran = Integer.parseInt(BlockStorage.getLocationInfo(l, "uran").replaceAll("[^0-9]", ""));
 				
 				if(isBuild.equals("false")) {
 					return;
 				}
-				saveCoolant(b,menu,coolant);
 				
+				saveCoolant(b,menu,coolant);
+				saveUran(b,menu,uran);
 				
 				
 			}
 			
 		};
 	}
-	public void saveCoolant(Block b, BlockMenu menu, int coolant) {
-		for(int i : inputs) {
-			ItemStack items = menu.getItemInSlot(i);
-			Bukkit.broadcastMessage("jop1");
-			if(items==null) {
-				break;
+	public void waterLevel(Block b, int coolant) {
+		Directional dir = (Directional) b.getBlockData();
+		double waterLevel = (coolant/128.0)*4.0;
+		int rot = Methodes.fac(dir.getFacing());
+		for(Vector v : vectors) {
+			final Vector relative = Methodes.rotVector(v, rot);
+			
+			relative.setY(0);
+			Block relativeBlock = b.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
+			if(waterLevel>0.0) {
+				relativeBlock.setType(Material.WATER);
+			}else {
+				relativeBlock.setType(Material.AIR);
 			}
-			SlimefunItem sfitems = SlimefunItem.getByItem(items);
-			Bukkit.broadcastMessage("jop2");
-			if(sfitems instanceof CoolantCell) {
-				Bukkit.broadcastMessage("jop3");
-				if(coolant<maxcoolant) {
-					int amount = items.getAmount();
-					BlockStorage.addBlockInfo(b.getLocation(), "coolant", String.valueOf(coolant+amount));
+			relative.setY(1);
+			relativeBlock = b.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
+			if(waterLevel>1.0) {
+				relativeBlock.setType(Material.WATER);
+			}else {
+				relativeBlock.setType(Material.AIR);
+			}
+			relative.setY(2);
+			relativeBlock = b.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
+			if(waterLevel>2.0) {
+				relativeBlock.setType(Material.WATER);
+			}else {
+				relativeBlock.setType(Material.AIR);
+			}
+			relative.setY(3);
+			relativeBlock = b.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
+			if(waterLevel>3.0) {
+				relativeBlock.setType(Material.WATER);
+			}else {
+				relativeBlock.setType(Material.AIR);
+			}
+			
+		}
+		
+		
+	}
+	public void saveCoolant(Block b, BlockMenu menu, int coolant) {
+		for(int i : inputs_coolant) {
+			ItemStack items = menu.getItemInSlot(i);
+			if(items!=null) {
+				SlimefunItem sfitems = SlimefunItem.getByItem(items);
+				if(sfitems instanceof CoolantCell) {
+					if(coolant<=maxcoolant) {
+						int amount = items.getAmount();
+						int minus = maxcoolant-coolant;
+						
+						if(amount>minus) {
+							BlockStorage.addBlockInfo(b.getLocation(), "coolant", String.valueOf(coolant+minus));
+							menu.consumeItem(i,minus);
+						}else {
+							BlockStorage.addBlockInfo(b.getLocation(), "coolant", String.valueOf(coolant+amount));
+							menu.consumeItem(i,amount);
+						}
+						
+					}
+				}
+			}
+		}
+	}
+	
+	public void saveUran(Block b, BlockMenu menu, int uran) {
+		for(int i : inputs_uran) {
+			ItemStack items = menu.getItemInSlot(i);
+			if(items!=null) {
+				SlimefunItem sfitems = SlimefunItem.getByItem(items);
+				if(sfitems.isItem(SlimefunItems.URANIUM)) {
+					if(uran<=maxuran) {
+						int amount = items.getAmount();
+						int minus = maxuran-uran;
+						
+						if(amount>minus) {
+							BlockStorage.addBlockInfo(b.getLocation(), "uran", String.valueOf(uran+minus));
+							menu.consumeItem(i,minus);
+						}else {
+							BlockStorage.addBlockInfo(b.getLocation(), "uran", String.valueOf(uran+amount));
+							menu.consumeItem(i,amount);
+						}
+						
+					}
 				}
 			}
 		}
 	}
 	public void uniqueTickk(Block b, BlockMenu menu) {
 		boolean stat = setState(b);
-		menu.replaceExistingItem(4, status(stat));
+		if(menu.hasViewer()) {
+			menu.replaceExistingItem(4, status(stat));
+		}
+		final String isBuild = BlockStorage.getLocationInfo(b.getLocation(),"build");
+		final int coolant = Integer.parseInt(BlockStorage.getLocationInfo(l, "coolant").replaceAll("[^0-9]", ""));
+		if(isBuild.equals("true")) {
+			waterLevel(b,coolant);
+		}
+		
 		
 	}
+	
 	public ItemStack status(Boolean b) {
 		ItemStack item = new ItemStack(Material.FLINT_AND_STEEL);
 		ItemMeta m = item.getItemMeta();
@@ -171,6 +257,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					
 				}
 				BlockStorage.addBlockInfo(e.getBlock(),"coolant","0");
+				BlockStorage.addBlockInfo(e.getBlock(),"uran","0");
 				spawnParticeReactor(e.getBlock());
 				
 				
@@ -304,7 +391,10 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
         };
     }
 	private void constructMenu(BlockMenuPreset preset) {
-    	
+		preset.addItem(10, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Slot", "", "&fThis Slot accepts Coolant Cells"),
+                ChestMenuUtils.getEmptyClickHandler());
+		preset.addItem(16, new CustomItemStack(SlimefunItems.URANIUM,"&7Fuel Slot", "", "&fThis Slot accepts radioactive Fuel such as:", "&2Uranium"),
+                ChestMenuUtils.getEmptyClickHandler());
     	
         for (int i : border) {
             preset.addItem(i, new CustomItemStack(new ItemStack(Material.GRAY_STAINED_GLASS_PANE), " "),
