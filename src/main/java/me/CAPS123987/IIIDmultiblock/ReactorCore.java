@@ -210,7 +210,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			menu.replaceExistingItem(4, status(stat));
 		}
 		final String isBuild = BlockStorage.getLocationInfo(b.getLocation(),"build");
-		final int coolant = Integer.parseInt(BlockStorage.getLocationInfo(l, "coolant").replaceAll("[^0-9]", ""));
+		final int coolant = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolant").replaceAll("[^0-9]", ""));
 		if(isBuild.equals("true")) {
 			waterLevel(b,coolant);
 		}
