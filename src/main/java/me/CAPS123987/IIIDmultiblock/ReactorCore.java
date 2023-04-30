@@ -148,7 +148,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			}
 			
 			int uran_out;
-			if(menu.getItemInSlot(outputcoolant)==null) {
+			if(menu.getItemInSlot(outputuran)==null) {
 				uran_out = 0;
 			}else {
 				uran_out = menu.getItemInSlot(outputuran).getAmount();
@@ -187,10 +187,10 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		CustomItemStack item = new CustomItemStack(Material.FLINT_AND_STEEL,"Remaining Time: "+String.valueOf(time)+"");
 		ItemMeta meta = item.getItemMeta();
 		List<String> lore = new ArrayList<String>();
-		if(coolant_out>48) {
+		if(coolant_out>32) {
 			lore.add(ChatColor.RED+"Heated Coolant in output");
 		}
-		if(uran_out>48) {
+		if(uran_out>32) {
 			lore.add(ChatColor.RED+"Trash in output");
 		}
 		meta.setLore(lore);
@@ -331,9 +331,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	}
 	public void uniqueTickk(Block b, BlockMenu menu) {
 		boolean stat = setState(b);
-		if(menu.hasViewer()) {
-			menu.replaceExistingItem(4, status(stat,menu,b));
-		}
+		menu.replaceExistingItem(4, status(stat,menu,b));
 		final String isBuild = BlockStorage.getLocationInfo(b.getLocation(),"build");
 		final int coolant = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolant").replaceAll("[^0-9]", ""));
 		if(isBuild.equals("true")) {
@@ -477,7 +475,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		}else if(m.equals(Material.ANCIENT_DEBRIS)) {
 			return Color.ORANGE;
 		}else if(m.equals(Material.PLAYER_HEAD)) {
-			return Color.BLACK;
+			return Color.GREEN;
 		}
 		return null;
 	}

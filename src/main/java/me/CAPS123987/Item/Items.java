@@ -83,7 +83,7 @@ public class Items {
 			"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU4MzI4NDE2MDdkZjc2ZWM1NjE5MGVhODdjMzE2MDUwYTI3N2E1YTU4ZjFkM2JjODJhMGU5NGVkYjk1MzUzIn19fQ==",
 	        "REACTOR_HATCH",
 	        "",
-	        "&0Black &7in Reactor Core Hologram"
+	        "&aGreen &7in Reactor Core Hologram"
 	    );
 	
 	

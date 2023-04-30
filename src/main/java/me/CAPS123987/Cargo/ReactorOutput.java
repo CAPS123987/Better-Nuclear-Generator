@@ -115,6 +115,7 @@ public class ReactorOutput extends SimpleSlimefunItem<BlockTicker> implements ET
 				}
 				if(found == false) {
 					e.getPlayer().sendMessage(ChatColor.RED+"No Reactor Core found");
+					BlockStorage.clearBlockInfo(b);
 					e.setCancelled(true);
 				}
 				

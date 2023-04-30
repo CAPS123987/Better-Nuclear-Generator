@@ -124,6 +124,7 @@ public class ReactorInput extends SimpleSlimefunItem<BlockTicker> implements ETI
 				}
 				if(found == false) {
 					e.getPlayer().sendMessage(ChatColor.RED+"No Reactor Core found");
+					BlockStorage.clearBlockInfo(b);
 					e.setCancelled(true);
 				}
 				
