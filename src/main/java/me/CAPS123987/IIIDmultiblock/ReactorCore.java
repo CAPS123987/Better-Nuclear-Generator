@@ -2,6 +2,7 @@ package me.CAPS123987.IIIDmultiblock;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
+import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockUseHandler;
@@ -42,21 +44,22 @@ import me.CAPS123987.Utils.Methodes;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ClickAction;
+import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineFuel;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import net.md_5.bungee.api.ChatColor;
 
-public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements EnergyNetComponent, ETInventoryBlock{
+public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements EnergyNetProvider, ETInventoryBlock{
 	
 	public final static int[] inputs = {19,28,37,25,34,43};
 	public final static int[] inputs_coolant = {19,28,37};
 	public final static int[] inputs_uran = {25,34,43};
 	public final static int[] outputs = {22,40};
-	public final static int[] outputuran = {40};
-	public final static int[] outputcoolant = {22};
-	public final static int[] border = {0,1,2,3,4,5,6,7,8};
+	public final static int outputuran = 40;
+	public final static int outputcoolant = 22;
+	public final static int[] border = {0,1,2,3,4,5,6,7,8,31};
 	public final static int[] coolantBorder = {9,11,18,20,27,29,30,36,38,45,46,47};
 	public final static int[] uranBorder = {15,17,24,26,32,33,35,42,44,51,52,53};
 	public final static int[] uranoutputborder = {39,41,48,49,50};
@@ -68,9 +71,11 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	private final static int coolant_status = 30;
 	private final static int uran_status = 32;
 	private final static int full_status = 31;
+	private final static int burnTime = 1000;
 
 	
 	private final Map<Vector, SlimefunItemStack> blocks;
+	public HashMap<Location,Integer> ticks = new HashMap<Location,Integer>();
 	
 	public ReactorCore(final Map<Vector, SlimefunItemStack> blocks) {
 		super(Items.betterReactor,Items.REACTOR_CORE, RecipeType.ENHANCED_CRAFTING_TABLE, Items.recipe_TEST_ITEM);
@@ -120,13 +125,77 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				saveUran(b,menu);
 				coolant_status(b,menu,coolant);
 				uran_status(b,menu,uran);
-				runReaction(b,coolant, uran);
+				runReaction(b, menu);
 			}
 			
 		};
 	}
-	public void runReaction(Block b,int coolant, int uran) {
+	public void runReaction(Block b,BlockMenu menu) {
+		int coolant = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolant"));
+		int uran = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uran"));
+		if(isRunning(b)) {
+			int tick = ticks.get(b.getLocation());
+			
+			if(tick==1) {
+				menu.pushItem(new CustomItemStack(SlimefunItems.NEPTUNIUM,1), outputuran);
+				BlockStorage.addBlockInfo(b,"uran", String.valueOf(uran-1));
+			}
+			int coolant_out;
+			if(menu.getItemInSlot(outputcoolant)==null) {
+				coolant_out = 0;
+			}else {
+				coolant_out = menu.getItemInSlot(outputcoolant).getAmount();
+			}
+			
+			int uran_out;
+			if(menu.getItemInSlot(outputcoolant)==null) {
+				uran_out = 0;
+			}else {
+				uran_out = menu.getItemInSlot(outputuran).getAmount();
+			}
+			
+			updateStatus(tick, menu, coolant_out, uran_out);
+			
+			if(!hasCoolant(b)|| coolant_out==64||uran_out==64) {
+				expolode(b);
+				ticks.remove(b.getLocation());
+				
+			}else {
+				ticks.replace(b.getLocation(), tick-1);
+				addCharge(b.getLocation(),2048);
+				BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-3));
+				menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT,1), outputcoolant);
+				
+			}
+			
+			return;
+		}
+		if(!hasFuel(b)) {
+			return;
+		}
+		if(ticks.containsKey(b.getLocation())) {
+			ticks.replace(b.getLocation(), burnTime);
+		}else {
+			ticks.put(b.getLocation(), burnTime);
+		}
 		
+	}
+	public void expolode(Block b) {
+		Bukkit.broadcastMessage("Boom");
+	}
+	public void updateStatus(int time,BlockMenu menu, int coolant_out, int uran_out) {
+		CustomItemStack item = new CustomItemStack(Material.FLINT_AND_STEEL,"Remaining Time: "+String.valueOf(time)+"");
+		ItemMeta meta = item.getItemMeta();
+		List<String> lore = new ArrayList<String>();
+		if(coolant_out>48) {
+			lore.add(ChatColor.RED+"Heated Coolant in output");
+		}
+		if(uran_out>48) {
+			lore.add(ChatColor.RED+"Trash in output");
+		}
+		meta.setLore(lore);
+		item.setItemMeta(meta);
+		menu.replaceExistingItem(full_status,item);
 	}
 	public void coolant_status(Block b,BlockMenu menu,int coolant) {
 		if(menu.hasViewer()) {
@@ -141,6 +210,34 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			double percent = (Double.valueOf(uran)/Double.valueOf(maxuran))*100;
 			percent= Math.round(percent);
 			menu.replaceExistingItem(uran_status, new CustomItemStack(SlimefunItems.URANIUM,"&cFuel Status: &4"+String.valueOf(percent)+"%",""));
+		}
+	}
+	public boolean hasFuel(Block b) {
+		final int uran = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uran"));
+		if(uran>0) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	public boolean hasCoolant(Block b) {
+		final int coolant = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolant"));
+		if(coolant>0) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	public boolean isRunning(Block b) {
+		if(ticks.containsKey(b.getLocation())) {
+			if(ticks.get(b.getLocation())==0) {
+				return false;
+			}else {
+				return true;
+			}
+		}else {
+			ticks.put(b.getLocation(), 0);
+			return false;
 		}
 	}
 	public void waterLevel(Block b, int coolant) {
@@ -235,7 +332,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public void uniqueTickk(Block b, BlockMenu menu) {
 		boolean stat = setState(b);
 		if(menu.hasViewer()) {
-			menu.replaceExistingItem(4, status(stat));
+			menu.replaceExistingItem(4, status(stat,menu,b));
 		}
 		final String isBuild = BlockStorage.getLocationInfo(b.getLocation(),"build");
 		final int coolant = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolant").replaceAll("[^0-9]", ""));
@@ -246,9 +343,10 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		
 	}
 	
-	public ItemStack status(Boolean b) {
-		ItemStack item = new ItemStack(Material.FLINT_AND_STEEL);
-		ItemMeta m = item.getItemMeta();
+	@SuppressWarnings("deprecation")
+	public ItemStack status(Boolean b, BlockMenu menu,Block Block) {
+		ItemStack item2 = new ItemStack(Material.FLINT_AND_STEEL);
+		ItemMeta m = item2.getItemMeta();
 		m.setDisplayName(ChatColor.RESET+"Status");
 		List<String> lore = new ArrayList<String>();
 		
@@ -256,10 +354,15 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			lore.add(ChatColor.GREEN+"Multiblock complete "+ChatColor.DARK_GREEN+"✔");
 		}else {
 			lore.add(ChatColor.RED+"Multiblock not complete "+ChatColor.DARK_RED+"✘");
+			lore.add(ChatColor.GRAY+"(Click to show help)");
+			menu.addMenuClickHandler(4, (p, slot, item, action) -> {
+				spawnParticeReactor(Block);
+                return false;
+            });
 		}
 		m.setLore(lore);
-		item.setItemMeta(m);
-		return item;
+		item2.setItemMeta(m);
+		return item2;
 		
 	}
 	public boolean setState(Block b) {
@@ -282,8 +385,11 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					e.getPlayer().sendMessage(ChatColor.AQUA+"Reactor Built");
 				}else {
 					BlockStorage.addBlockInfo(e.getBlock(), "build", "false");
+					BlockMenu inv= BlockStorage.getInventory(e.getBlock());
+					inv.replaceExistingItem(4, status(false,inv,e.getBlock()));
 					
 				}
+				ticks.put(e.getBlock().getLocation(), 0);
 				BlockStorage.addBlockInfo(e.getBlock(),"coolant","0");
 				BlockStorage.addBlockInfo(e.getBlock(),"uran","0");
 				spawnParticeReactor(e.getBlock());
@@ -418,6 +524,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
             }
         };
     }
+	@SuppressWarnings("deprecation")
 	private void constructMenu(BlockMenuPreset preset) {
 		preset.addItem(10, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Slot", "", "&fThis Slot accepts Coolant Cells"),
                 ChestMenuUtils.getEmptyClickHandler());
@@ -460,6 +567,12 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
                 }
             });
         }
+	}
+
+	@Override
+	public int getGeneratedOutput(Location l, Config data) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

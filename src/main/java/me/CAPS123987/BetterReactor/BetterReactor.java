@@ -43,6 +43,7 @@ public class BetterReactor extends JavaPlugin implements SlimefunAddon {
         new SlimefunItem(Items.betterReactor, Items.LEAD_BLOCK, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_LEAD_BLOCK).register(this);
         new SlimefunItem(Items.betterReactor, Items.GRAFIT_ROD, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_GRAFIT_ROD).register(this);
         new SlimefunItem(Items.betterReactor, Items.REACTOR_HATCH ,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_TEST_ITEM).register(this);
+        new SlimefunItem(Items.betterReactor, Items.HEATED_COOLANT ,RecipeType.NULL, new ItemStack[0]).register(this);
         new Grafit().register(this);
         new ReactorInput().register(this);
         new ReactorOutput().register(this);
