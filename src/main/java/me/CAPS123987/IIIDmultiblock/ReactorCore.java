@@ -61,6 +61,8 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public final static int maxcoolant = 128;
 	public final static int maxuran = 64;
 	private final static Vector[] vectors= {new Vector(0,0,1),new Vector(1,0,2),new Vector(0,0,3),new Vector(-1,0,2)};
+	private final static int coolant_status = 30;
+	private final static int uran_status = 32;
 
 	
 	private final Map<Vector, SlimefunItemStack> blocks;
@@ -111,11 +113,25 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				
 				saveCoolant(b,menu,coolant);
 				saveUran(b,menu,uran);
-				
-				
+				coolant_status(b,menu,coolant);
+				uran_status(b,menu,uran);
 			}
 			
 		};
+	}
+	public void coolant_status(Block b,BlockMenu menu,int coolant) {
+		if(menu.hasViewer()) {
+			double percent = (Double.valueOf(coolant)/Double.valueOf(maxcoolant))*100;
+			percent= Math.round(percent);
+			menu.replaceExistingItem(coolant_status, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Status: &9"+String.valueOf(percent)+"%",""));
+			}
+		}
+	public void uran_status(Block b,BlockMenu menu,int uran) {
+		if(menu.hasViewer()) {
+			double percent = (Double.valueOf(uran)/Double.valueOf(maxuran))*100;
+			percent= Math.round(percent);
+			menu.replaceExistingItem(uran_status, new CustomItemStack(SlimefunItems.URANIUM,"&cFuel Status: &4"+String.valueOf(percent)+"%",""));
+		}
 	}
 	public void waterLevel(Block b, int coolant) {
 		Directional dir = (Directional) b.getBlockData();
