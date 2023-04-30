@@ -53,16 +53,21 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public final static int[] inputs = {19,28,37,25,34,43};
 	public final static int[] inputs_coolant = {19,28,37};
 	public final static int[] inputs_uran = {25,34,43};
-	public final static int[] outputs = {};
-	public final int[] border = {0,1,2,3,4,5,6,7,8};
-	public final int[] inputBorder = {9,11,18,20,27,29,36,38,45,46,47};
-	public final int[] outputBorder = {15,17,24,26,33,35,42,44,51,52,53};
+	public final static int[] outputs = {22,40};
+	public final static int[] outputuran = {40};
+	public final static int[] outputcoolant = {22};
+	public final static int[] border = {0,1,2,3,4,5,6,7,8};
+	public final static int[] coolantBorder = {9,11,18,20,27,29,30,36,38,45,46,47};
+	public final static int[] uranBorder = {15,17,24,26,32,33,35,42,44,51,52,53};
+	public final static int[] uranoutputborder = {39,41,48,49,50};
+	public final static int[] coolantoutputborder = {12,13,14,21,23};
 	private int uniqueTick = 0;
 	public final static int maxcoolant = 128;
 	public final static int maxuran = 64;
 	private final static Vector[] vectors= {new Vector(0,0,1),new Vector(1,0,2),new Vector(0,0,3),new Vector(-1,0,2)};
 	private final static int coolant_status = 30;
 	private final static int uran_status = 32;
+	private final static int full_status = 31;
 
 	
 	private final Map<Vector, SlimefunItemStack> blocks;
@@ -111,19 +116,24 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					return;
 				}
 				
-				saveCoolant(b,menu,coolant);
-				saveUran(b,menu,uran);
+				saveCoolant(b,menu);
+				saveUran(b,menu);
 				coolant_status(b,menu,coolant);
 				uran_status(b,menu,uran);
+				runReaction(b,coolant, uran);
 			}
 			
 		};
+	}
+	public void runReaction(Block b,int coolant, int uran) {
+		
 	}
 	public void coolant_status(Block b,BlockMenu menu,int coolant) {
 		if(menu.hasViewer()) {
 			double percent = (Double.valueOf(coolant)/Double.valueOf(maxcoolant))*100;
 			percent= Math.round(percent);
 			menu.replaceExistingItem(coolant_status, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Status: &9"+String.valueOf(percent)+"%",""));
+			
 			}
 		}
 	public void uran_status(Block b,BlockMenu menu,int uran) {
@@ -173,8 +183,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		
 		
 	}
-	public void saveCoolant(Block b, BlockMenu menu, int coolant) {
+	public void saveCoolant(Block b, BlockMenu menu) {
 		for(int i : inputs_coolant) {
+			final int coolant = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolant").replaceAll("[^0-9]", ""));
 			ItemStack items = menu.getItemInSlot(i);
 			if(items!=null) {
 				SlimefunItem sfitems = SlimefunItem.getByItem(items);
@@ -197,8 +208,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		}
 	}
 	
-	public void saveUran(Block b, BlockMenu menu, int uran) {
+	public void saveUran(Block b, BlockMenu menu) {
 		for(int i : inputs_uran) {
+			final int uran = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uran").replaceAll("[^0-9]", ""));
 			ItemStack items = menu.getItemInSlot(i);
 			if(items!=null) {
 				SlimefunItem sfitems = SlimefunItem.getByItem(items);
@@ -394,7 +406,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
                 Block b = e.getBlock();
                 BlockMenu inv = BlockStorage.getInventory(b);
 
-                e.getBlock().getWorld().setChunkForceLoaded(b.getLocation().getChunk().getX(), b.getLocation().getChunk().getZ(), false);
+                
                 
                 if (inv != null) {
                     inv.dropItems(b.getLocation(), getInputSlots());
@@ -416,15 +428,22 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
             preset.addItem(i, new CustomItemStack(new ItemStack(Material.GRAY_STAINED_GLASS_PANE), " "),
                 ChestMenuUtils.getEmptyClickHandler());
         }
-        for (int i : inputBorder) {
+        for (int i : coolantBorder) {
             preset.addItem(i, new CustomItemStack(new ItemStack(Material.CYAN_STAINED_GLASS_PANE), " "),
                 ChestMenuUtils.getEmptyClickHandler());
         }
-        for (int i : outputBorder) {
+        for (int i : uranBorder) {
             preset.addItem(i, new CustomItemStack(new ItemStack(Material.ORANGE_STAINED_GLASS_PANE), " "),
                 ChestMenuUtils.getEmptyClickHandler());
         }
-        
+        for (int i : coolantoutputborder) {
+            preset.addItem(i, new CustomItemStack(new ItemStack(Material.BLUE_STAINED_GLASS_PANE), " "),
+                ChestMenuUtils.getEmptyClickHandler());
+        }
+        for (int i : uranoutputborder) {
+            preset.addItem(i, new CustomItemStack(new ItemStack(Material.RED_STAINED_GLASS_PANE), " "),
+                ChestMenuUtils.getEmptyClickHandler());
+        }
 
         for (int i : getOutputSlots()) {
             preset.addMenuClickHandler(i, new ChestMenu.AdvancedMenuClickHandler() {
