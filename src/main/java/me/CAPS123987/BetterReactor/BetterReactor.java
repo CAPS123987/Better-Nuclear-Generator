@@ -24,10 +24,12 @@ import me.CAPS123987.IIIDmultiblock.ReactorCore;
 import me.CAPS123987.Item.Grafit;
 import me.CAPS123987.Item.Items;
 import me.CAPS123987.Utils.Methodes;
+import me.CAPS123987.machines.SuperFreezer;
 
 public class BetterReactor extends JavaPlugin implements SlimefunAddon {
 	public static BetterReactor instance;
 	private static final Map<Vector, SlimefunItemStack> reactor = new LinkedHashMap<>();
+	private static final Map<Vector, SlimefunItemStack> cooling = new LinkedHashMap<>();
 	
     @Override
     public void onEnable() {
@@ -78,7 +80,8 @@ public class BetterReactor extends JavaPlugin implements SlimefunAddon {
         reactor.put(new Vector(-1,0,0), Items.REACTOR_INPUT);
         reactor.put(new Vector(1,0,0), Items.REACTOR_OUTPUT);
         
-        new ReactorCore(reactor).register(this);
+        new SuperFreezer().register(this);
+
         
         
         

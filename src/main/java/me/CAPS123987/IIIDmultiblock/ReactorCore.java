@@ -71,7 +71,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	private final static int coolant_status = 30;
 	private final static int uran_status = 32;
 	private final static int full_status = 31;
-	private final static int burnTime = 1000;
+	public final static int burnTime = 1000;
+	public final static int power = 2048;
+	public final static int total = power*burnTime;
 
 	
 	private final Map<Vector, SlimefunItemStack> blocks;
@@ -133,12 +135,12 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public void runReaction(Block b,BlockMenu menu) {
 		int coolant = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolant"));
 		int uran = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uran"));
+		Player p = Bukkit.getPlayer(BlockStorage.getLocationInfo(b.getLocation(), "owner"));
 		if(isRunning(b)) {
 			int tick = ticks.get(b.getLocation());
 			
 			if(tick==1) {
-				menu.pushItem(new CustomItemStack(SlimefunItems.NEPTUNIUM,1), outputuran);
-				BlockStorage.addBlockInfo(b,"uran", String.valueOf(uran-1));
+				menu.pushItem(new CustomItemStack(SlimefunItems.PLUTONIUM,1), outputuran);
 			}
 			int coolant_out;
 			if(menu.getItemInSlot(outputcoolant)==null) {
@@ -154,7 +156,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				uran_out = menu.getItemInSlot(outputuran).getAmount();
 			}
 			
-			updateStatus(tick, menu, coolant_out, uran_out);
+			updateStatus(tick, menu, coolant_out, uran_out,p,b);
 			
 			if(!hasCoolant(b)|| coolant_out==64||uran_out==64) {
 				expolode(b);
@@ -162,7 +164,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				
 			}else {
 				ticks.replace(b.getLocation(), tick-1);
-				addCharge(b.getLocation(),2048);
+				addCharge(b.getLocation(),power);
 				BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-3));
 				menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT,1), outputcoolant);
 				
@@ -173,6 +175,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		if(!hasFuel(b)) {
 			return;
 		}
+		BlockStorage.addBlockInfo(b,"uran", String.valueOf(uran-1));
 		if(ticks.containsKey(b.getLocation())) {
 			ticks.replace(b.getLocation(), burnTime);
 		}else {
@@ -183,15 +186,21 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public void expolode(Block b) {
 		Bukkit.broadcastMessage("Boom");
 	}
-	public void updateStatus(int time,BlockMenu menu, int coolant_out, int uran_out) {
-		CustomItemStack item = new CustomItemStack(Material.FLINT_AND_STEEL,"Remaining Time: "+String.valueOf(time)+"");
+	public void updateStatus(int time,BlockMenu menu, int coolant_out, int uran_out, Player p,Block b) {
+		CustomItemStack item = new CustomItemStack(Material.FLINT_AND_STEEL,ChatColor.RESET+"Remaining Time: "+String.valueOf(time/2)+"s");
 		ItemMeta meta = item.getItemMeta();
 		List<String> lore = new ArrayList<String>();
 		if(coolant_out>32) {
 			lore.add(ChatColor.RED+"Heated Coolant in output");
+			p.sendMessage(ChatColor.DARK_RED+"[REACTOR]"+ChatColor.RED+" Reactor at"+
+			ChatColor.GOLD+" x: "+b.getLocation().getBlockX()+" y: "+b.getLocation().getBlockY()+" z: "+b.getLocation().getBlockZ()+ChatColor.RED
+			+" has "+ChatColor.YELLOW+coolant_out+ChatColor.RED+" coolant in output");
 		}
 		if(uran_out>32) {
-			lore.add(ChatColor.RED+"Trash in output");
+			lore.add(ChatColor.RED+"Uran waste in output");
+			p.sendMessage(ChatColor.DARK_RED+"[REACTOR]"+ChatColor.RED+" Reactor at"+
+			ChatColor.GOLD+" x: "+b.getLocation().getBlockX()+" y: "+b.getLocation().getBlockY()+" z: "+b.getLocation().getBlockZ()+ChatColor.RED
+			+" has "+ChatColor.YELLOW+uran_out+ChatColor.RED+" uran waste in output");
 		}
 		meta.setLore(lore);
 		item.setItemMeta(meta);
@@ -242,7 +251,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	}
 	public void waterLevel(Block b, int coolant) {
 		Directional dir = (Directional) b.getBlockData();
-		double waterLevel = (coolant/128.0)*4.0;
+		double waterLevel = (coolant/Double.valueOf(maxcoolant))*4.0;
 		int rot = Methodes.fac(dir.getFacing());
 		for(Vector v : vectors) {
 			final Vector relative = Methodes.rotVector(v, rot);
@@ -390,6 +399,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				ticks.put(e.getBlock().getLocation(), 0);
 				BlockStorage.addBlockInfo(e.getBlock(),"coolant","0");
 				BlockStorage.addBlockInfo(e.getBlock(),"uran","0");
+				BlockStorage.addBlockInfo(e.getBlock(),"owner",e.getPlayer().getName());
 				spawnParticeReactor(e.getBlock());
 				
 				

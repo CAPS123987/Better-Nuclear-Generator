@@ -16,6 +16,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.LoreBuilder;
 import me.CAPS123987.BetterReactor.BetterReactor;
+import me.CAPS123987.IIIDmultiblock.ReactorCore;
 
 public class Items {
 	
@@ -32,7 +33,9 @@ public class Items {
 	        "",
 	        LoreBuilder.machine(MachineTier.END_GAME, MachineType.GENERATOR),
 	        LoreBuilder.powerBuffer(4096),
-	        LoreBuilder.powerPerSecond(1024)
+	        LoreBuilder.powerPerSecond(2048),
+	        "&8\u21E8 &e\u26A1 &7"+"Lasts "+ReactorCore.burnTime/2+"s",
+	        "&8\u21E8 &e\u26A1 &7"+"In total: 2.04M J"
 	    );
 	public static final SlimefunItemStack HEATED_COOLANT = new SlimefunItemStack("HEATED_COOLANT",
 			"de4073be40cb3deb310a0be959b4cac68e825372728fafb6c2973e4e7c33",
@@ -45,6 +48,11 @@ public class Items {
 	        "LEAD_BLOCK",
 	        "",
 	        "&fWhite &7in Reactor Core Hologram"
+	    );
+	public static final SlimefunItemStack SUPER_FREEZER = new SlimefunItemStack("SUPER_FREEZER",
+			Material.QUARTZ_BLOCK,
+	        "SUPER_FREEZER",
+	        ""
 	    );
 	
 	public static final SlimefunItemStack LEAD_GLASS = new SlimefunItemStack("LEAD_GLASS",
