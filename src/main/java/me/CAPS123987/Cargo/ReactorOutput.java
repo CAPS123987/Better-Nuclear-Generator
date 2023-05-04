@@ -43,7 +43,7 @@ public class ReactorOutput extends SimpleSlimefunItem<BlockTicker> implements ET
 	private static final int[] outputBorder = {0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,44,45,46,47,48,49,50,51,52,53};
 	private static final Vector[] sides = {new Vector(1,0,0),new Vector(-1,0,0),new Vector(0,0,1),new Vector(0,0,-1),};
 	public ReactorOutput() {
-		super(Items.betterReactor, Items.REACTOR_OUTPUT,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_TEST_ITEM);
+		super(Items.betterReactor, Items.REACTOR_OUTPUT,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_REACTOR_OUTPUT);
 		createPreset(this, this::constructMenu);
 		addItemHandler(BlockPlaceHandler(),onBreak());
 	}

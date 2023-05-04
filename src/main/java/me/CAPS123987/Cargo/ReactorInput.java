@@ -44,7 +44,7 @@ public class ReactorInput extends SimpleSlimefunItem<BlockTicker> implements ETI
 	private static final Vector[] sides = {new Vector(1,0,0),new Vector(-1,0,0),new Vector(0,0,1),new Vector(0,0,-1),};
 	
 	public ReactorInput() {
-		super(Items.betterReactor, Items.REACTOR_INPUT ,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_TEST_ITEM);
+		super(Items.betterReactor, Items.REACTOR_INPUT ,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_REACTOR_INPUT);
 		createPreset(this, this::constructMenu);
 		addItemHandler(BlockPlaceHandler(),onBreak());
 	}

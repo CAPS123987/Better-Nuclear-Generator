@@ -26,13 +26,13 @@ import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 
 public class SuperFreezer extends SimpleSlimefunItem<BlockTicker> implements EnergyNetComponent, ETInventoryBlock{
-	public final static int[] inputs = {};
-	public final static int[] outputs = {};
+	public final static int[] inputs = {19,20};
+	public final static int[] outputs = {24,25};
 	public final static int[] input_border = {9,10,11,12,18,21,27,28,29,30};
-	public final static int[] output_border = {};
-	public final static int[] border = {0,1,2,3,4,5,6,7,8};
+	public final static int[] output_border = {14,15,16,17,23,26,32,33,34,35};
+	public final static int[] border = {0,1,2,3,4,5,6,7,8,13,22,31,36,37,38,39,40,41,42,43,44};
 	public SuperFreezer() {
-		super(Items.betterReactor,Items.SUPER_FREEZER,RecipeType.ENHANCED_CRAFTING_TABLE,Items.recipe_TEST_ITEM);
+		super(Items.betterReactor,Items.SUPER_FREEZER,RecipeType.ENHANCED_CRAFTING_TABLE,Items.recipe_SUPER_FREEZER);
 		createPreset(this, this::constructMenu);
 	}
 
@@ -48,8 +48,55 @@ public class SuperFreezer extends SimpleSlimefunItem<BlockTicker> implements Ene
 			}
 
 			@Override
-			public void tick(Block b, SlimefunItem item, Config data) {
+			public void tick(Block b, SlimefunItem item2, Config data) {
 				BlockMenu menu = BlockStorage.getInventory(b);
+				for(int i:inputs) {
+					ItemStack item = menu.getItemInSlot(i);
+					if(item != null) {
+						SlimefunItem sfitem = SlimefunItem.getByItem(item);
+						if(sfitem !=null) {
+							if(sfitem.isItem(Items.HEATED_COOLANT)) {
+								if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
+									menu.consumeItem(i,1);
+								}
+							}
+							
+						}
+						if(item.isSimilar(new ItemStack(Material.WATER_BUCKET))) {
+							
+							if(menu.getItemInSlot(outputs[0])==null||menu.fits(new ItemStack(Material.BUCKET), outputs[0])) {
+								
+								if(menu.pushItem(new ItemStack(Material.BUCKET), outputs[0])==null) {
+									
+									if(menu.getItemInSlot(outputs[1])==null||menu.fits(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs[1])) {
+										menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs[1]);
+										menu.consumeItem(i);
+									}else {
+										menu.consumeItem(outputs[0]);
+									}
+								}
+
+							}
+						}
+						if(item.isSimilar(new ItemStack(Material.ICE))) {
+							if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
+								menu.consumeItem(i);
+							}
+						}
+						if(item.isSimilar(new ItemStack(Material.PACKED_ICE))) {
+							if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
+								menu.consumeItem(i);
+							}
+						}
+						if(item.isSimilar(new ItemStack(Material.BLUE_ICE))) {
+							if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
+								menu.consumeItem(i);
+							}
+						}
+						
+					}
+					
+				}
 				
 			}
 			

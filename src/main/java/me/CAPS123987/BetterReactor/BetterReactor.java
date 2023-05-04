@@ -29,7 +29,6 @@ import me.CAPS123987.machines.SuperFreezer;
 public class BetterReactor extends JavaPlugin implements SlimefunAddon {
 	public static BetterReactor instance;
 	private static final Map<Vector, SlimefunItemStack> reactor = new LinkedHashMap<>();
-	private static final Map<Vector, SlimefunItemStack> cooling = new LinkedHashMap<>();
 	
     @Override
     public void onEnable() {
@@ -44,8 +43,8 @@ public class BetterReactor extends JavaPlugin implements SlimefunAddon {
         new SlimefunItem(Items.betterReactor, Items.LEAD_GLASS, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_LEAD_GLASS,new SlimefunItemStack(Items.LEAD_GLASS, 8)).register(this);
         new SlimefunItem(Items.betterReactor, Items.LEAD_BLOCK, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_LEAD_BLOCK).register(this);
         new SlimefunItem(Items.betterReactor, Items.GRAFIT_ROD, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_GRAFIT_ROD).register(this);
-        new SlimefunItem(Items.betterReactor, Items.REACTOR_HATCH ,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_TEST_ITEM).register(this);
-        new SlimefunItem(Items.betterReactor, Items.HEATED_COOLANT ,RecipeType.FREEZER, new ItemStack[0]).register(this);
+        new SlimefunItem(Items.betterReactor, Items.REACTOR_HATCH ,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_REACTOR_HATCH).register(this);
+        new SlimefunItem(Items.betterReactor, Items.HEATED_COOLANT ,RecipeType.NULL, new ItemStack[0]).register(this);
         new Grafit().register(this);
         new ReactorInput().register(this);
         new ReactorOutput().register(this);
@@ -80,6 +79,7 @@ public class BetterReactor extends JavaPlugin implements SlimefunAddon {
         reactor.put(new Vector(-1,0,0), Items.REACTOR_INPUT);
         reactor.put(new Vector(1,0,0), Items.REACTOR_OUTPUT);
         
+        new ReactorCore(reactor).register(this);
         new SuperFreezer().register(this);
 
         

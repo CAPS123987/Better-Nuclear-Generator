@@ -14,6 +14,7 @@ import org.bukkit.Particle;
 import org.bukkit.Particle.DustOptions;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -38,6 +39,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunIte
 import io.github.thebusybiscuit.slimefun4.implementation.items.misc.CoolantCell;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
+import me.CAPS123987.BetterReactor.BetterReactor;
 import me.CAPS123987.Item.Items;
 import me.CAPS123987.Utils.ETInventoryBlock;
 import me.CAPS123987.Utils.Methodes;
@@ -53,6 +55,8 @@ import net.md_5.bungee.api.ChatColor;
 
 public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements EnergyNetProvider, ETInventoryBlock{
 	
+	FileConfiguration cfg = BetterReactor.instance.getConfig();
+	public int particles = cfg.getInt("Reactor_Core_Hologram_Particles");
 	public final static int[] inputs = {19,28,37,25,34,43};
 	public final static int[] inputs_coolant = {19,28,37};
 	public final static int[] inputs_uran = {25,34,43};
@@ -80,7 +84,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public HashMap<Location,Integer> ticks = new HashMap<Location,Integer>();
 	
 	public ReactorCore(final Map<Vector, SlimefunItemStack> blocks) {
-		super(Items.betterReactor,Items.REACTOR_CORE, RecipeType.ENHANCED_CRAFTING_TABLE, Items.recipe_TEST_ITEM);
+		super(Items.betterReactor,Items.REACTOR_CORE, RecipeType.ENHANCED_CRAFTING_TABLE, Items.recipe_REACTOR_CORE);
 		this.blocks = blocks;
 		createPreset(this, this::constructMenu);
 		addItemHandler(BlockPlaceHandler(), onBreak());
@@ -361,7 +365,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			lore.add(ChatColor.GREEN+"Multiblock complete "+ChatColor.DARK_GREEN+"✔");
 		}else {
 			lore.add(ChatColor.RED+"Multiblock not complete "+ChatColor.DARK_RED+"✘");
-			lore.add(ChatColor.GRAY+"(Click to show help)");
+			lore.add(ChatColor.GRAY+"(Click to show "+ChatColor.AQUA+"Reactor Core Hologram"+ChatColor.GRAY+")");
 			menu.addMenuClickHandler(4, (p, slot, item, action) -> {
 				spawnParticeReactor(Block);
                 return false;
@@ -469,7 +473,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		Color c = geColor(m);
 		//b.getWorld().spawnFallingBlock(b.getLocation(), new MaterialData(m));
 		if(!b.getType().equals(m)) {
-			b.getWorld().spawnParticle(Particle.REDSTONE, b.getLocation().getX() +0.5,b.getLocation().getY() +0.5,b.getLocation().getZ() +0.5, 100, 0.1 , 0.1 , 0.1 ,new DustOptions(c,1));
+			b.getWorld().spawnParticle(Particle.REDSTONE, b.getLocation().getX() +0.5,b.getLocation().getY() +0.5,b.getLocation().getZ() +0.5, particles, 0.1 , 0.1 , 0.1 ,new DustOptions(c,1));
 		}
 		
 	}
