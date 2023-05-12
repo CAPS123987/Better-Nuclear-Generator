@@ -42,7 +42,7 @@ public class BetterReactor extends JavaPlugin implements SlimefunAddon {
         instance = this;
         new SlimefunItem(Items.betterReactor, Items.LEAD_GLASS, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_LEAD_GLASS,new SlimefunItemStack(Items.LEAD_GLASS, 8)).register(this);
         new SlimefunItem(Items.betterReactor, Items.LEAD_BLOCK, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_LEAD_BLOCK).register(this);
-        new SlimefunItem(Items.betterReactor, Items.GRAFIT_ROD, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_GRAFIT_ROD).register(this);
+        new SlimefunItem(Items.betterReactor, Items.BORIUM_ROD, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_BORIUM_ROD).register(this);
         new SlimefunItem(Items.betterReactor, Items.REACTOR_HATCH ,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_REACTOR_HATCH).register(this);
         new SlimefunItem(Items.betterReactor, Items.HEATED_COOLANT ,RecipeType.NULL, new ItemStack[0]).register(this);
         new Grafit().register(this);
@@ -64,11 +64,11 @@ public class BetterReactor extends JavaPlugin implements SlimefunAddon {
         Methodes.areaList(-2, 0, 4, -2, 4, 4, Items.LEAD_BLOCK, reactor);
         Methodes.areaList(2, 0, 4, 2, 4, 4, Items.LEAD_BLOCK, reactor);
         //rods
-        Methodes.areaList(-1, 0, 1, -1, 3, 1, Items.GRAFIT_ROD, reactor);
-        Methodes.areaList(1, 0, 1, 1, 3, 1, Items.GRAFIT_ROD, reactor);
-        Methodes.areaList(1, 0, 3, 1, 3, 3, Items.GRAFIT_ROD, reactor);
-        Methodes.areaList(-1, 0, 3, -1, 3, 3, Items.GRAFIT_ROD, reactor);
-        Methodes.areaList(0, 0, 2, 0, 3, 2, Items.GRAFIT_ROD, reactor);
+        Methodes.areaList(-1, 0, 1, -1, 3, 1, Items.BORIUM_ROD, reactor);
+        Methodes.areaList(1, 0, 1, 1, 3, 1, Items.BORIUM_ROD, reactor);
+        Methodes.areaList(1, 0, 3, 1, 3, 3, Items.BORIUM_ROD, reactor);
+        Methodes.areaList(-1, 0, 3, -1, 3, 3, Items.BORIUM_ROD, reactor);
+        Methodes.areaList(0, 0, 2, 0, 3, 2, Items.BORIUM_ROD, reactor);
         //hatches
         reactor.put(new Vector(-1,4,1), Items.REACTOR_HATCH);
         reactor.put(new Vector(1,4,1), Items.REACTOR_HATCH);

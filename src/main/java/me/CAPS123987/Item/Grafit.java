@@ -14,7 +14,7 @@ import me.CAPS123987.BetterReactor.BetterReactor;
 
 public class Grafit extends UnplaceableBlock implements GEOResource{
 	public Grafit() {
-        super(Items.betterReactor, Items.GRAFIT, RecipeType.GEO_MINER, new ItemStack[0]);
+        super(Items.betterReactor, Items.BORIUM, RecipeType.GEO_MINER, new ItemStack[0]);
         register();
     }
 	private final NamespacedKey key = new NamespacedKey(BetterReactor.getInstance(), "grafit");

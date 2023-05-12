@@ -77,13 +77,15 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	private final static int full_status = 31;
 	public final static int burnTime = 1000;
 	public final static int power = 512;
-	public final static long maxTemp = 6000;
+	public final static long maxTemp = 7000;
 	public final static int total = power*burnTime;
 
 	
 	private final Map<Vector, SlimefunItemStack> blocks;
 	public HashMap<Location,Integer> ticks = new HashMap<Location,Integer>();
 	public HashMap<Location,Integer> uran500 = new HashMap<Location,Integer>();
+	public HashMap<Location,Long> temp = new HashMap<Location,Long>();
+	
 	
 	public ReactorCore(final Map<Vector, SlimefunItemStack> blocks) {
 		super(Items.betterReactor,Items.REACTOR_CORE, RecipeType.ENHANCED_CRAFTING_TABLE, Items.recipe_REACTOR_CORE);
@@ -166,6 +168,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		int coolantPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolantPer"));
 		int uranPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uranPer"));
 		
+		
 		long el = uranPer*power;
 		
 		if(isRunning(b)) {
@@ -175,11 +178,20 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				menu.pushItem(new CustomItemStack(SlimefunItems.PLUTONIUM,1), outputuran);
 			}
 			long temperature = Math.round(((Double.valueOf(uran500.get(b.getLocation())))/Double.valueOf(coolantPer))*5500.0);
-			if(!hasCoolant(b)|| coolant_out==64||uran_out==64||temperature>maxTemp) {
+			long tempe = temp.get(b.getLocation());
+			
+			if(!hasCoolant(b)|| coolant_out==64||uran_out==64||tempe>maxTemp) {
 				expolode(b);
 				ticks.remove(b.getLocation());
 				
 			}else {
+				if(tempe<temperature) {
+					temp.replace(b.getLocation(), tempe+((temperature-tempe)/20));
+				}
+				if(tempe>temperature) {
+					temp.replace(b.getLocation(), tempe-((tempe-temperature)/10));
+				}
+				
 				ticks.replace(b.getLocation(), tick-1);
 				addCharge(b.getLocation(),(int)el);
 				BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-coolantPer));
@@ -192,6 +204,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		if(!hasFuel(b)) {
 			return;
 		}
+		long temperature = Math.round((Double.valueOf(uranPer)/Double.valueOf(coolantPer))*5500);
 		BlockStorage.addBlockInfo(b,"uran", String.valueOf(uran-uranPer));
 		if(ticks.containsKey(b.getLocation())) {
 			ticks.replace(b.getLocation(), burnTime);
@@ -203,6 +216,12 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			uran500.replace(b.getLocation(), uranPer);
 		}else {
 			uran500.put(b.getLocation(), uranPer);
+		}
+		
+		if(temp.containsKey(b.getLocation())) {
+			temp.replace(b.getLocation(), temperature);
+		}else {
+			temp.put(b.getLocation(), temperature);
 		}
 		
 	}
@@ -227,14 +246,19 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			ChatColor.GOLD+" x: "+b.getLocation().getBlockX()+" y: "+b.getLocation().getBlockY()+" z: "+b.getLocation().getBlockZ()+ChatColor.RED
 			+" has "+ChatColor.YELLOW+uran_out+ChatColor.RED+" uran waste in output");
 		}
+		if(isRunning&&temp.get(b.getLocation())>6000) {
+			lore.add(ChatColor.DARK_RED+"High heat");
+			p.sendMessage(ChatColor.DARK_RED+"[REACTOR]"+ChatColor.RED+" Reactor at"+
+					ChatColor.GOLD+" x: "+b.getLocation().getBlockX()+" y: "+b.getLocation().getBlockY()+" z: "+b.getLocation().getBlockZ()+ChatColor.RED
+					+" has High heat!");
+		}
 		if(menu.hasViewer()) {
 			lore.add(ChatColor.GRAY+"Coolant Per Tick: "+coolantPer);
 			lore.add(ChatColor.GRAY+"Uran Per 500s: "+uranPer);
 			
 			if(isRunning) {
 				lore.add(ChatColor.YELLOW+"->Current Uran Per 500s: "+uran500.get(b.getLocation()));
-				long temperature = Math.round((Double.valueOf(uran500.get(b.getLocation()))/Double.valueOf(coolantPer))*5500);
-				lore.add(temp(temperature)+"->Current temperature: "+temperature+" °C");
+				lore.add(temp(temp.get(b.getLocation()))+"->Current temperature: "+temp.get(b.getLocation())+" °C");
 				long el = uran500.get(b.getLocation())*power;
 				lore.add(ChatColor.YELLOW+"->Current power: "+ChatColor.YELLOW+el+"J/s");
 				
@@ -253,7 +277,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public ChatColor temp(long temp) {
 		if(temp <= 4125) {
 			return ChatColor.AQUA;
-		}if(temp >= maxTemp) {
+		}if(temp >= 6000) {
 			return ChatColor.RED;
 		}
 		return ChatColor.GREEN;

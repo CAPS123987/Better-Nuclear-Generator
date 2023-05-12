@@ -68,16 +68,16 @@ public class Items {
 	        "&7Gray in &bReactor Core Hologram"
 	    );
 	
-	public static final SlimefunItemStack GRAFIT_ROD = new SlimefunItemStack("GRAFIT_ROD",
+	public static final SlimefunItemStack BORIUM_ROD = new SlimefunItemStack("BORIUM_ROD",
 			Material.ANCIENT_DEBRIS,
-			ChatColor.RESET+"Grafit Rod",
+			ChatColor.RESET+"BORIUM_ROD",
 	        "",
 	        "&6Orange &7in &bReactor Core Hologram"
 	    );
 	
-	public static final SlimefunItemStack GRAFIT = new SlimefunItemStack("GRAFIT",
+	public static final SlimefunItemStack BORIUM = new SlimefunItemStack("BORIUM",
 			Material.GUNPOWDER,
-			ChatColor.RESET+"Grafit",
+			ChatColor.RESET+"BORIUM",
 	        ""
 	    );
 	public static final SlimefunItemStack REACTOR_INPUT = new SlimefunItemStack("REACTOR_INPUT",
@@ -112,10 +112,10 @@ public class Items {
 			SlimefunItems.ELECTRIC_MOTOR,SlimefunItems.ELECTRO_MAGNET,SlimefunItems.FREEZER_2
 	};
 	
-	public static final ItemStack[] recipe_GRAFIT_ROD= {
-			Items.GRAFIT,Items.GRAFIT,Items.GRAFIT,
-			Items.GRAFIT,new ItemStack(Material.IRON_BLOCK),Items.GRAFIT,
-			Items.GRAFIT,Items.GRAFIT,Items.GRAFIT
+	public static final ItemStack[] recipe_BORIUM_ROD= {
+			Items.BORIUM,Items.BORIUM,Items.BORIUM,
+			Items.BORIUM,new ItemStack(Material.IRON_BLOCK),Items.BORIUM,
+			Items.BORIUM,Items.BORIUM,Items.BORIUM
 	};
 	
 	public static final ItemStack[] recipe_LEAD_BLOCK= {
