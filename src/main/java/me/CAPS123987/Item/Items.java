@@ -70,7 +70,7 @@ public class Items {
 	
 	public static final SlimefunItemStack BORIUM_ROD = new SlimefunItemStack("BORIUM_ROD",
 			Material.ANCIENT_DEBRIS,
-			ChatColor.RESET+"BORIUM_ROD",
+			ChatColor.RESET+"Borium Rod",
 	        "",
 	        "&6Orange &7in &bReactor Core Hologram"
 	    );
