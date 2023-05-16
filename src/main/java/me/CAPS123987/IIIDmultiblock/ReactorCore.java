@@ -180,7 +180,8 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			long temperature = Math.round(((Double.valueOf(uran500.get(b.getLocation())))/Double.valueOf(coolantPer))*5500.0);
 			long tempe = temp.get(b.getLocation());
 			
-			if(!hasCoolant(b)|| coolant_out==64||uran_out==64||tempe>maxTemp) {
+			
+			if(coolant_out==64||uran_out==64||tempe>maxTemp) {
 				expolode(b);
 				ticks.remove(b.getLocation());
 				
@@ -194,7 +195,11 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				
 				ticks.replace(b.getLocation(), tick-1);
 				addCharge(b.getLocation(),(int)el);
-				BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-coolantPer));
+				if(!hasCoolant(b)) {
+					temp.replace(b.getLocation(), tempe+200);
+				}else {
+					BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-coolantPer));
+				}
 				menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT,(int)Math.round(coolantPer/2)), outputcoolant);
 				
 			}
@@ -335,8 +340,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	}
 	
 	public boolean hasFuel(Block b) {
+		final int uranPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uranPer"));
 		final int uran = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uran"));
-		if(uran>0) {
+		if(uran>=uranPer) {
 			return true;
 		}else {
 			return false;

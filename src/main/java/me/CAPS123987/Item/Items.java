@@ -77,7 +77,7 @@ public class Items {
 	
 	public static final SlimefunItemStack BORIUM = new SlimefunItemStack("BORIUM",
 			Material.GUNPOWDER,
-			ChatColor.RESET+"BORIUM",
+			ChatColor.RESET+"Borium",
 	        ""
 	    );
 	public static final SlimefunItemStack REACTOR_INPUT = new SlimefunItemStack("REACTOR_INPUT",
