@@ -15,7 +15,11 @@ import org.bukkit.Particle.DustOptions;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.SplashPotion;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -231,6 +235,29 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		
 	}
 	public void expolode(Block b) {
+		for(int x=-4;x!=8;x=x+4) {
+			for(int z=-4;z!=8;z=z+4) {
+				Location l = b.getLocation().clone().add(x, 0, z);
+				Creeper creeper = (Creeper) l.getBlock().getWorld().spawnEntity(l, EntityType.CREEPER);
+				creeper.setInvulnerable(true);
+				creeper.ignite();
+				creeper.setExplosionRadius(127);
+				creeper.setGravity(false);
+				
+				
+			}
+		}
+		for(int x=-11;x!=12;x++) {
+			for(int y=-11;y!=12;y++) {
+				for(int z=-11;z!=12;z++) {
+					Location l = b.getLocation().clone().add(x, y, z);
+					if(BlockStorage.hasBlockInfo(l)) {
+						BlockStorage.clearBlockInfo(l);
+						l.getBlock().setType(Material.AIR);
+					}
+				}
+			}
+		}
 		Bukkit.broadcastMessage("Boom");
 	}
 	public void updateStatus(int time,BlockMenu menu, int coolant_out, int uran_out, Player p,Block b,int coolantPer,int uranPer, boolean isRunning) {
