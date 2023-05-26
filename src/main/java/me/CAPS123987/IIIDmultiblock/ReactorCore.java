@@ -292,14 +292,14 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				lore.add(ChatColor.YELLOW+"->Current Uran Per 500s: "+uran500.get(b.getLocation()));
 				lore.add(temp(temp.get(b.getLocation()))+"->Current temperature: "+temp.get(b.getLocation())+" °C");
 				long el = uran500.get(b.getLocation())*power;
-				lore.add(ChatColor.YELLOW+"->Current power: "+ChatColor.YELLOW+el+"J/s");
+				lore.add(ChatColor.YELLOW+"->Current power: "+ChatColor.YELLOW+el*2+" J/s");
 				
 			}
 			
 			long temperature = Math.round((Double.valueOf(uranPer)/Double.valueOf(coolantPer))*5500);
 			lore.add(temp(temperature)+"Estimated temperature: "+temperature+" °C");
 			long el = uranPer*power;
-			lore.add(ChatColor.GRAY+"Estimated power: "+ChatColor.YELLOW+el+"J/s");
+			lore.add(ChatColor.GRAY+"Estimated power: "+ChatColor.YELLOW+el*2+" J/s");
 			
 			meta.setLore(lore);
 			item.setItemMeta(meta);
