@@ -50,52 +50,58 @@ public class SuperFreezer extends SimpleSlimefunItem<BlockTicker> implements Ene
 			@Override
 			public void tick(Block b, SlimefunItem item2, Config data) {
 				BlockMenu menu = BlockStorage.getInventory(b);
-				for(int i:inputs) {
-					ItemStack item = menu.getItemInSlot(i);
-					if(item != null) {
-						SlimefunItem sfitem = SlimefunItem.getByItem(item);
-						if(sfitem !=null) {
-							if(sfitem.isItem(Items.HEATED_COOLANT)) {
-								if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
-									menu.consumeItem(i,1);
-								}
-							}
-							
-						}
-						if(item.isSimilar(new ItemStack(Material.WATER_BUCKET))) {
-							
-							if(menu.getItemInSlot(outputs[0])==null||menu.fits(new ItemStack(Material.BUCKET), outputs[0])) {
-								
-								if(menu.pushItem(new ItemStack(Material.BUCKET), outputs[0])==null) {
-									
-									if(menu.getItemInSlot(outputs[1])==null||menu.fits(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs[1])) {
-										menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs[1]);
-										menu.consumeItem(i);
-									}else {
-										menu.consumeItem(outputs[0]);
+				if(getCharge(b.getLocation())>=50) {
+					for(int i:inputs) {
+						ItemStack item = menu.getItemInSlot(i);
+						if(item != null) {
+							SlimefunItem sfitem = SlimefunItem.getByItem(item);
+							if(sfitem !=null) {
+								if(sfitem.isItem(Items.HEATED_COOLANT)) {
+									if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
+										menu.consumeItem(i,1);
 									}
 								}
-
+								
 							}
-						}
-						if(item.isSimilar(new ItemStack(Material.ICE))) {
-							if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
-								menu.consumeItem(i);
+							if(item.isSimilar(new ItemStack(Material.WATER_BUCKET))) {
+								
+								if(menu.getItemInSlot(outputs[0])==null||menu.fits(new ItemStack(Material.BUCKET), outputs[0])) {
+									
+									if(menu.pushItem(new ItemStack(Material.BUCKET), outputs[0])==null) {
+										
+										if(menu.getItemInSlot(outputs[1])==null||menu.fits(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs[1])) {
+											menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs[1]);
+											menu.consumeItem(i);
+											removeCharge(b.getLocation(),50);
+										}else {
+											menu.consumeItem(outputs[0]);
+										}
+									}
+	
+								}
 							}
-						}
-						if(item.isSimilar(new ItemStack(Material.PACKED_ICE))) {
-							if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
-								menu.consumeItem(i);
+							if(item.isSimilar(new ItemStack(Material.ICE))) {
+								if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
+									menu.consumeItem(i);
+									removeCharge(b.getLocation(),50);
+								}
 							}
-						}
-						if(item.isSimilar(new ItemStack(Material.BLUE_ICE))) {
-							if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
-								menu.consumeItem(i);
+							if(item.isSimilar(new ItemStack(Material.PACKED_ICE))) {
+								if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
+									menu.consumeItem(i);
+									removeCharge(b.getLocation(),50);
+								}
 							}
+							if(item.isSimilar(new ItemStack(Material.BLUE_ICE))) {
+								if(menu.pushItem(new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL), outputs)==null) {
+									menu.consumeItem(i);
+									removeCharge(b.getLocation(),50);
+								}
+							}
+							
 						}
 						
 					}
-					
 				}
 				
 			}

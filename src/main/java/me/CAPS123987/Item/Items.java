@@ -51,7 +51,8 @@ public class Items {
 	        ChatColor.RESET+"Super Freezer",
 	        "",
 	        "&7(&cWarning!&7 more inputs needed for good flow of items)",
-	        "&7Water instantly to coolant"
+	        "&7Water instantly to coolant",
+	        LoreBuilder.powerPerSecond(50)
 	    );
 	
 	public static final SlimefunItemStack LEAD_BLOCK = new SlimefunItemStack("LEAD_BLOCK",
