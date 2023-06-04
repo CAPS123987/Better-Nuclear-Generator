@@ -176,38 +176,39 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		long el = uranPer*power;
 		
 		if(isRunning(b)) {
-			int tick = ticks.get(b.getLocation());
-			
-			if(tick==1) {
-				menu.pushItem(new CustomItemStack(SlimefunItems.PLUTONIUM,1), outputuran);
-			}
-			long temperature = Math.round(((Double.valueOf(uran500.get(b.getLocation())))/Double.valueOf(coolantPer))*5500.0);
-			long tempe = temp.get(b.getLocation());
-			
-			
-			if(coolant_out==64||uran_out==64||tempe>maxTemp) {
-				expolode(b);
-				ticks.remove(b.getLocation());
+			if(b.getChunk().isLoaded()) {
+				int tick = ticks.get(b.getLocation());
 				
-			}else {
-				if(tempe<temperature) {
-					temp.replace(b.getLocation(), tempe+((temperature-tempe)/20));
+				if(tick==1) {
+					menu.pushItem(new CustomItemStack(SlimefunItems.PLUTONIUM,1), outputuran);
 				}
-				if(tempe>temperature) {
-					temp.replace(b.getLocation(), tempe-((tempe-temperature)/10));
-				}
+				long temperature = Math.round(((Double.valueOf(uran500.get(b.getLocation())))/Double.valueOf(coolantPer))*5500.0);
+				long tempe = temp.get(b.getLocation());
 				
-				ticks.replace(b.getLocation(), tick-1);
-				addCharge(b.getLocation(),(int)el);
-				if(!hasCoolant(b)) {
-					temp.replace(b.getLocation(), tempe+200);
+				
+				if(coolant_out==64||uran_out==64||tempe>maxTemp) {
+					expolode(b);
+					ticks.remove(b.getLocation());
+					
 				}else {
-					BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-coolantPer));
+					if(tempe<temperature) {
+						temp.replace(b.getLocation(), tempe+((temperature-tempe)/20));
+					}
+					if(tempe>temperature) {
+						temp.replace(b.getLocation(), tempe-((tempe-temperature)/10));
+					}
+					
+					ticks.replace(b.getLocation(), tick-1);
+					addCharge(b.getLocation(),(int)el);
+					if(!hasCoolant(b)) {
+						temp.replace(b.getLocation(), tempe+200);
+					}else {
+						BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-coolantPer));
+					}
+					menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT,(int)Math.round(coolantPer/2)), outputcoolant);
+					
 				}
-				menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT,(int)Math.round(coolantPer/2)), outputcoolant);
-				
 			}
-			
 			return;
 		}
 		if(!hasFuel(b)) {
