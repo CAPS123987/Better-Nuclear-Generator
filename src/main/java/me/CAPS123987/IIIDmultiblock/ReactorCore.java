@@ -363,7 +363,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				return false;
 			});
 			
-			menu.replaceExistingItem(uran_status, new CustomItemStack(SlimefunItems.URANIUM,"&cFuel Status: &4"+String.valueOf(percent)+"%","","&r&fCurrent uran per 500s: &7"+String.valueOf(uranPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7+1"));
+			menu.replaceExistingItem(uran_status, new CustomItemStack(SlimefunItems.URANIUM,"&cFuel Status: &4"+String.valueOf(percent)+"%","&r&fCurrent uran per 500s: &7"+String.valueOf(uranPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7+1"));
 		}
 	}
 	
