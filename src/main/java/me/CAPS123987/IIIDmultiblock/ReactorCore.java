@@ -15,6 +15,7 @@ import org.bukkit.Particle.DustOptions;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
@@ -26,6 +27,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
@@ -244,7 +247,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				creeper.ignite();
 				creeper.setExplosionRadius(127);
 				creeper.setGravity(false);
-				
+				creeper.setFuseTicks(0);
 				
 			}
 		}
@@ -259,6 +262,29 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				}
 			}
 		}
+		
+		BetterReactor.instance.getServer().getScheduler().runTaskLater(BetterReactor.instance, new Runnable() {
+
+			@Override
+			public void run() {
+				for(int x = -46;x<49;x=x+4) {
+					for(int z = -46;z<49;z=z+4) {
+						Location Loc = b.getLocation().clone().add(x, 0, z);
+						
+						Location AreaLoc = Loc.getWorld().getHighestBlockAt(Loc).getLocation();
+						
+						AreaEffectCloud Area = (AreaEffectCloud) AreaLoc.getWorld().spawnEntity(AreaLoc, EntityType.AREA_EFFECT_CLOUD);
+						
+						Area.addCustomEffect(new PotionEffect(PotionEffectType.HARM,5,2), true);
+						Area.setDuration(36000);
+						Area.setParticle(Particle.CRIT);
+					}
+				}
+			}
+			
+		}, 80L);
+		
+		
 		Bukkit.broadcastMessage("Boom");
 	}
 	public void updateStatus(int time,BlockMenu menu, int coolant_out, int uran_out, Player p,Block b,int coolantPer,int uranPer, boolean isRunning) {
