@@ -5,13 +5,13 @@ name: BetterReactor
 author: CAPS123987
 
 ## CHANGE this to a meaninful but short description of your plugin.
-description: A generic Slimefun4-Addon
+description: Slimefun4-Addon that adds more realistic reactor
 
 ## CHANGE this to the path of the class that extends JavaPlugin.
 main: me.CAPS123987.BetterReactor.BetterReactor
 
 ## You can change this to link to your website or repository. You can also remove this line if you want to.
-website: https://github.com/Slimefun/Addon-Template
+website: https://github.com/CAPS123987/Better-Nuclear-Generator
 
 ## This value is automatically replaced by the version specified in your pom.xml file.
 ## Do not change this.

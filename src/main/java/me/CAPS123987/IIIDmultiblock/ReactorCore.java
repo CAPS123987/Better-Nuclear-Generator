@@ -135,6 +135,26 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				final int uran = Integer.parseInt(BlockStorage.getLocationInfo(l, "uran").replaceAll("[^0-9]", ""));
 				
 				if(isBuild.equals("false")) {
+					if(isRunning(b)) {
+						for(int x = -1;x<5;x=x+4) {
+							for(int z = -1;z<5;z=z+4) {
+								for(int y = -1;y<8;y=y+2) {
+									Location Loc = b.getLocation().clone().add(x, y, z);
+									
+									
+									AreaEffectCloud Area = (AreaEffectCloud) Loc.getWorld().spawnEntity(Loc, EntityType.AREA_EFFECT_CLOUD);
+									
+									Area.addCustomEffect(new PotionEffect(PotionEffectType.HARM,5,2), true);
+									Area.setDuration(36000);
+									Area.setParticle(Particle.CRIT);
+								}
+							}
+						}
+						Bukkit.getPlayer(BlockStorage.getLocationInfo(l, "owner")).sendMessage(ChatColor.DARK_RED+"[REACTOR]"+ChatColor.RED+" Reactor at"+
+								ChatColor.GOLD+" x: "+b.getLocation().getBlockX()+" y: "+b.getLocation().getBlockY()+" z: "+b.getLocation().getBlockZ()+ChatColor.RED+
+								" LEAKED");
+						ticks.replace(l, 0);
+					}
 					return;
 				}
 				
