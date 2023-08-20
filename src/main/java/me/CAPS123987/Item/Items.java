@@ -36,7 +36,7 @@ public class Items {
 	        LoreBuilder.powerBuffer(4096),
 	        LoreBuilder.powerPerSecond(4096),
 	        "&8\u21E8 &e\u26A1 &7"+"Lasts "+ReactorCore.burnTime/2+"s",
-	        "&8\u21E8 &e\u26A1 &7"+"In total: 2.04M J",
+	        "&8\u21E8 &e\u26A1 &7"+"In total: 2.04M J +",
 	        "&7Core of Reactor, &bshows Reactor Core Hologram"
 	    );
 	public static final SlimefunItemStack HEATED_COOLANT = new SlimefunItemStack("HEATED_COOLANT",

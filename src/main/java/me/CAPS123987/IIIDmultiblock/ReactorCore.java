@@ -20,6 +20,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SplashPotion;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -65,6 +66,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	
 	FileConfiguration cfg = BetterReactor.instance.getConfig();
 	public int particles = cfg.getInt("Reactor_Core_Hologram_Particles");
+	public boolean biggerExplosion = cfg.getBoolean("biggerExplosion");
 	public final static int[] inputs = {19,28,37,25,34,43};
 	public final static int[] inputs_coolant = {19,28,37};
 	public final static int[] inputs_uran = {25,34,43};
@@ -87,8 +89,8 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public final static float coolantTime = 12.5f;
 	public final static int power = 1024;
 	public final static long maxTemp = 7000;
-	public final static int maxUraniumPer = 8;
-	public final static int maxCoolantPer = 8;
+	public final int maxUraniumPer = cfg.getInt("uranMax");
+	public final int maxCoolantPer = maxUraniumPer;
 	public final static int total = power*burnTime;
 	public final static int baseExplosionRadiusPer = 32;
 	public final static int baseFalloutRadiusPer = 10;
@@ -268,6 +270,37 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		
 	}
 	public void expolode(Block b, int uranPer) {
+		
+		
+		
+		
+		if(biggerExplosion) {
+			Bukkit.broadcastMessage(ChatColor.DARK_RED+"WARNING: SERVER LAG INCOMING");
+			
+			for(int x=-uranPer*2;x<=uranPer*2;x=x+4) {
+				for(int z=-uranPer*2;z<=uranPer*2;z=z+4) {
+					Location l = b.getLocation().clone().add(x, 0, z);
+					
+					Fireball ball = (Fireball) l.getWorld().spawnEntity(l, EntityType.FIREBALL);
+					ball.setInvulnerable(true);
+					ball.setYield(Math.min(baseExplosionRadiusPer*uranPer,127));
+					ball.setVelocity(new Vector(0,-10,0));
+				}
+			}
+		}else {
+			for(int x=-4;x!=8;x=x+4) {
+				for(int z=-4;z!=8;z=z+4) {
+					Location l = b.getLocation().clone().add(x, 0, z);
+					Creeper creeper = (Creeper) l.getWorld().spawnEntity(l, EntityType.CREEPER);
+					creeper.setInvulnerable(true);
+					creeper.ignite();
+					creeper.setExplosionRadius(Math.min(baseExplosionRadiusPer*uranPer, 127));
+					creeper.setGravity(false);
+					creeper.setFuseTicks(0);		
+				}
+			}
+		}
+		
 		for(int x=-11;x!=12;x++) {
 			for(int y=-11;y!=12;y++) {
 				for(int z=-11;z!=12;z++) {
@@ -278,25 +311,8 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					}
 				}
 			}
-		}		
-		for(int x=-4;x!=8;x=x+4) {
-			for(int z=-4;z!=8;z=z+4) {
-				Location l = b.getLocation().clone().add(x, 0, z);
-				Creeper creeper = (Creeper) l.getBlock().getWorld().spawnEntity(l, EntityType.CREEPER);
-				creeper.setInvulnerable(true);
-				creeper.ignite();
-				creeper.setExplosionRadius(baseExplosionRadiusPer*uranPer);
-				creeper.setGravity(false);
-				creeper.setFuseTicks(0);
-				/* Maybe switch to this
-				TNTPrimed explosion = (TNTPrimed) l.getBlock().getWorld().spawnEntity(l, EntityType.PRIMED_TNT);
-				explosion.setInvulnerable(true);
-				explosion.setYield(baseExplosionRadiusPer*uranPer);
-				explosion.setGravity(false);
-				explosion.setFuseTicks(0);
-				 */				
-			}
-		}		
+		}
+		
 		BetterReactor.instance.getServer().getScheduler().runTaskLater(BetterReactor.instance, new Runnable() {
 
 			@Override
@@ -319,7 +335,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		}, 80L);
 		
 		
-		Bukkit.broadcastMessage("Boom");
+
 	}
 	public void updateStatus(int time,BlockMenu menu, int coolant_out, int uran_out, Player p,Block b,int coolantPer,int uranPer, boolean isRunning) {
 		CustomItemStack item = new CustomItemStack(Material.FLINT_AND_STEEL,ChatColor.RESET+"Remaining Time: "+String.valueOf(time)+"t");
