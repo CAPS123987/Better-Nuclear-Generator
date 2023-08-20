@@ -84,6 +84,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	private final static int uran_status = 32;
 	private final static int full_status = 31;
 	public final static int burnTime = 1200;
+	public final static float coolantTime = 12.5f;
 	public final static int power = 1024;
 	public final static long maxTemp = 7000;
 	public final static int maxUraniumPer = 8;
@@ -232,9 +233,11 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					if(!hasCoolant(b)) {
 						temp.replace(b.getLocation(), tempe+200);
 					}else {
-						BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-coolantPer));
+						if(tick%coolantTime==0)
+							BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-coolantPer));
 					}
-					menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT,(int)Math.round(coolantPer/2)), outputcoolant);
+					if(tick%coolantTime==0)
+						menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT,(int)Math.round(coolantPer/2)), outputcoolant);
 					
 				}
 			}
@@ -265,6 +268,17 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		
 	}
 	public void expolode(Block b, int uranPer) {
+		for(int x=-11;x!=12;x++) {
+			for(int y=-11;y!=12;y++) {
+				for(int z=-11;z!=12;z++) {
+					Location l = b.getLocation().clone().add(x, y, z);
+					if(BlockStorage.hasBlockInfo(l)) {
+						BlockStorage.clearBlockInfo(l);
+						l.getBlock().setType(Material.AIR);
+					}
+				}
+			}
+		}		
 		for(int x=-4;x!=8;x=x+4) {
 			for(int z=-4;z!=8;z=z+4) {
 				Location l = b.getLocation().clone().add(x, 0, z);
@@ -280,22 +294,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				explosion.setYield(baseExplosionRadiusPer*uranPer);
 				explosion.setGravity(false);
 				explosion.setFuseTicks(0);
-				 */
-				
+				 */				
 			}
-		}
-		for(int x=-11;x!=12;x++) {
-			for(int y=-11;y!=12;y++) {
-				for(int z=-11;z!=12;z++) {
-					Location l = b.getLocation().clone().add(x, y, z);
-					if(BlockStorage.hasBlockInfo(l)) {
-						BlockStorage.clearBlockInfo(l);
-						l.getBlock().setType(Material.AIR);
-					}
-				}
-			}
-		}
-		
+		}		
 		BetterReactor.instance.getServer().getScheduler().runTaskLater(BetterReactor.instance, new Runnable() {
 
 			@Override
@@ -345,7 +346,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					+" has High heat!");
 		}
 		if(menu.hasViewer()) {
-			lore.add(ChatColor.GRAY+"Coolant Per Tick: "+coolantPer);
+			lore.add(ChatColor.GRAY+"Coolant Per "+coolantTime+"t: "+coolantPer);
 			lore.add(ChatColor.GRAY+"Uran Per " + burnTime + "t: "+uranPer);
 			
 			if(isRunning) {
@@ -396,7 +397,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				
 				return false;
 			});
-			menu.replaceExistingItem(coolant_status, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Status: &9"+String.valueOf(percent)+"%","&r&fCurrent coolant per tick: &7"+String.valueOf(coolantPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7-1"));
+			menu.replaceExistingItem(coolant_status, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Status: &9"+String.valueOf(percent)+"%","&r&fCurrent coolant per "+coolantTime+"t: &7"+String.valueOf(coolantPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7-1"));
 			
 			}
 		}
