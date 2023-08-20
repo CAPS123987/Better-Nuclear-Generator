@@ -18,6 +18,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SplashPotion;
@@ -82,10 +83,15 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	private final static int coolant_status = 30;
 	private final static int uran_status = 32;
 	private final static int full_status = 31;
-	public final static int burnTime = 1000;
-	public final static int power = 512;
+	public final static int burnTime = 1200;
+	public final static int power = 1024;
 	public final static long maxTemp = 7000;
+	public final static int maxUraniumPer = 8;
+	public final static int maxCoolantPer = 8;
 	public final static int total = power*burnTime;
+	public final static int baseExplosionRadiusPer = 32;
+	public final static int baseFalloutRadiusPer = 10;
+	public final static int falloutTickTimePer = 9000;
 
 	
 	private final Map<Vector, SlimefunItemStack> blocks;
@@ -203,14 +209,14 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				int tick = ticks.get(b.getLocation());
 				
 				if(tick==1) {
-					menu.pushItem(new CustomItemStack(SlimefunItems.PLUTONIUM,1), outputuran);
+					menu.pushItem(new CustomItemStack(SlimefunItems.PLUTONIUM,Math.round(uranPer/2)), outputuran);
 				}
 				long temperature = Math.round(((Double.valueOf(uran500.get(b.getLocation())))/Double.valueOf(coolantPer))*5500.0);
 				long tempe = temp.get(b.getLocation());
 				
 				
 				if(coolant_out==64||uran_out==64||tempe>maxTemp) {
-					expolode(b);
+					expolode(b,uranPer);
 					ticks.remove(b.getLocation());
 					
 				}else {
@@ -258,16 +264,23 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		}
 		
 	}
-	public void expolode(Block b) {
+	public void expolode(Block b, int uranPer) {
 		for(int x=-4;x!=8;x=x+4) {
 			for(int z=-4;z!=8;z=z+4) {
 				Location l = b.getLocation().clone().add(x, 0, z);
 				Creeper creeper = (Creeper) l.getBlock().getWorld().spawnEntity(l, EntityType.CREEPER);
 				creeper.setInvulnerable(true);
 				creeper.ignite();
-				creeper.setExplosionRadius(127);
+				creeper.setExplosionRadius(baseExplosionRadiusPer*uranPer);
 				creeper.setGravity(false);
 				creeper.setFuseTicks(0);
+				/* Maybe switch to this
+				TNTPrimed explosion = (TNTPrimed) l.getBlock().getWorld().spawnEntity(l, EntityType.PRIMED_TNT);
+				explosion.setInvulnerable(true);
+				explosion.setYield(baseExplosionRadiusPer*uranPer);
+				explosion.setGravity(false);
+				explosion.setFuseTicks(0);
+				 */
 				
 			}
 		}
@@ -287,8 +300,8 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 
 			@Override
 			public void run() {
-				for(int x = -46;x<49;x=x+4) {
-					for(int z = -46;z<49;z=z+4) {
+				for(int x = -baseFalloutRadiusPer*uranPer;x<baseFalloutRadiusPer*uranPer;x=x+4) {
+					for(int z = -baseFalloutRadiusPer*uranPer;z<baseFalloutRadiusPer*uranPer;z=z+4) {
 						Location Loc = b.getLocation().clone().add(x, 0, z);
 						
 						Location AreaLoc = Loc.getWorld().getHighestBlockAt(Loc).getLocation();
@@ -296,7 +309,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 						AreaEffectCloud Area = (AreaEffectCloud) AreaLoc.getWorld().spawnEntity(AreaLoc, EntityType.AREA_EFFECT_CLOUD);
 						
 						Area.addCustomEffect(new PotionEffect(PotionEffectType.HARM,5,2), true);
-						Area.setDuration(36000);
+						Area.setDuration(falloutTickTimePer*uranPer);
 						Area.setParticle(Particle.CRIT);
 					}
 				}
@@ -308,7 +321,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		Bukkit.broadcastMessage("Boom");
 	}
 	public void updateStatus(int time,BlockMenu menu, int coolant_out, int uran_out, Player p,Block b,int coolantPer,int uranPer, boolean isRunning) {
-		CustomItemStack item = new CustomItemStack(Material.FLINT_AND_STEEL,ChatColor.RESET+"Remaining Time: "+String.valueOf(time/2)+"s");
+		CustomItemStack item = new CustomItemStack(Material.FLINT_AND_STEEL,ChatColor.RESET+"Remaining Time: "+String.valueOf(time)+"t");
 		ItemMeta meta = item.getItemMeta();
 		List<String> lore = new ArrayList<String>();
 		lore.add(ChatColor.GOLD+"Is Running: "+isRunning);
@@ -333,20 +346,20 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		}
 		if(menu.hasViewer()) {
 			lore.add(ChatColor.GRAY+"Coolant Per Tick: "+coolantPer);
-			lore.add(ChatColor.GRAY+"Uran Per 500s: "+uranPer);
+			lore.add(ChatColor.GRAY+"Uran Per " + burnTime + "t: "+uranPer);
 			
 			if(isRunning) {
-				lore.add(ChatColor.YELLOW+"->Current Uran Per 500s: "+uran500.get(b.getLocation()));
+				lore.add(ChatColor.YELLOW+"->Current Uran Per " + burnTime + "t: "+uran500.get(b.getLocation()));
 				lore.add(temp(temp.get(b.getLocation()))+"->Current temperature: "+temp.get(b.getLocation())+" °C");
 				long el = uran500.get(b.getLocation())*power;
-				lore.add(ChatColor.YELLOW+"->Current power: "+ChatColor.YELLOW+el*2+" J/s");
+				lore.add(ChatColor.YELLOW+"->Current power: "+ChatColor.YELLOW+el+" J/t");
 				
 			}
 			
 			long temperature = Math.round((Double.valueOf(uranPer)/Double.valueOf(coolantPer))*5500);
 			lore.add(temp(temperature)+"Estimated temperature: "+temperature+" °C");
 			long el = uranPer*power;
-			lore.add(ChatColor.GRAY+"Estimated power: "+ChatColor.YELLOW+el*2+" J/s");
+			lore.add(ChatColor.GRAY+"Estimated power: "+ChatColor.YELLOW+el+" J/t");
 			
 			meta.setLore(lore);
 			item.setItemMeta(meta);
@@ -372,7 +385,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			
 			menu.addMenuClickHandler(coolant_status, (pl, slot, item, action)-> {
 				if(!action.isRightClicked()) {
-					if(coolantPer!=4) {
+					if(coolantPer!=maxCoolantPer) {
 						BlockStorage.addBlockInfo(b, "coolantPer", String.valueOf(coolantPer+1));
 					}
 				}else {
@@ -397,7 +410,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			int uranPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(),"uranPer"));
 			menu.addMenuClickHandler(uran_status, (pl, slot, item, action)-> {
 				if(!action.isRightClicked()) {
-					if(uranPer!=4) {
+					if(uranPer!= maxUraniumPer) {
 						BlockStorage.addBlockInfo(b, "uranPer", String.valueOf(uranPer+1));
 					}
 				}else {
@@ -409,7 +422,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				return false;
 			});
 			
-			menu.replaceExistingItem(uran_status, new CustomItemStack(SlimefunItems.URANIUM,"&cFuel Status: &4"+String.valueOf(percent)+"%","&r&fCurrent uran per 500s: &7"+String.valueOf(uranPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7+1"));
+			menu.replaceExistingItem(uran_status, new CustomItemStack(SlimefunItems.URANIUM,"&cFuel Status: &4"+String.valueOf(percent)+"%","&r&fCurrent uran per "+burnTime +"t: &7"+String.valueOf(uranPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7+1"));
 		}
 	}
 	
@@ -704,7 +717,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	@Override
 	public int getCapacity() {
 		// TODO Auto-generated method stub
-		return 4096;
+		return power*maxUraniumPer*2;
 	}
 	public BlockBreakHandler onBreak() {
         return new BlockBreakHandler(false, false) {
