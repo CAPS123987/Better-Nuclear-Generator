@@ -1,3 +1,9 @@
 options:
   auto-update: true
 Reactor_Core_Hologram_Particles: 100
+
+uranMax: 8
+
+# set if explosions are bigger
+# WARNING: This will lag the server when explosion ocurs
+biggerExplosion: false
