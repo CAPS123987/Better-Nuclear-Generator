@@ -89,7 +89,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public final static int maxUraniumPer = 8;
 	public final static int maxCoolantPer = 8;
 	public final static int total = power*burnTime;
-	public final static int baseExplosionRadiusPer = 37;
+	public final static int baseExplosionRadiusPer = 32;
 	public final static int baseFalloutRadiusPer = 10;
 	public final static int falloutTickTimePer = 9000;
 
