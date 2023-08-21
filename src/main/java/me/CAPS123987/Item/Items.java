@@ -2,9 +2,12 @@ package me.CAPS123987.Item;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.text.DecimalFormat;
+
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -18,10 +21,12 @@ import io.github.thebusybiscuit.slimefun4.utils.LoreBuilder;
 import me.CAPS123987.BetterReactor.BetterReactor;
 import me.CAPS123987.IIIDmultiblock.ReactorCore;
 import net.md_5.bungee.api.ChatColor;
-
 public class Items {
 	
 	
+	public static FileConfiguration cfg = BetterReactor.instance.getConfig();
+	public static int uranMax = cfg.getInt("uranMax");
+	public static DecimalFormat df = new DecimalFormat("0.00");
 	
 	public static final ItemGroup betterReactor = new ItemGroup(new NamespacedKey(BetterReactor.getInstance(),
 	        "Better_Reactor"),
@@ -33,10 +38,10 @@ public class Items {
 	        ChatColor.RESET+"Reactor Core",
 	        "",
 	        LoreBuilder.machine(MachineTier.END_GAME, MachineType.GENERATOR),
-	        LoreBuilder.powerBuffer(4096),
-	        LoreBuilder.powerPerSecond(4096),
-	        "&8\u21E8 &e\u26A1 &7"+"Lasts "+ReactorCore.burnTime/2+"s",
-	        "&8\u21E8 &e\u26A1 &7"+"In total: 2.04M J +",
+	        LoreBuilder.powerBuffer(uranMax*ReactorCore.powerPer*2),
+	        LoreBuilder.powerPerSecond(uranMax*ReactorCore.powerPer/2),
+	        "&8\u21E8 &e\u26A1 &7"+"Lasts "+ReactorCore.burnTime+"t",
+	        "&8\u21E8 &e\u26A1 &7"+"In total: "+df.format(uranMax*ReactorCore.powerPer*ReactorCore.burnTime/1000000f) +"M J",
 	        "&7Core of Reactor, &bshows Reactor Core Hologram"
 	    );
 	public static final SlimefunItemStack HEATED_COOLANT = new SlimefunItemStack("HEATED_COOLANT",

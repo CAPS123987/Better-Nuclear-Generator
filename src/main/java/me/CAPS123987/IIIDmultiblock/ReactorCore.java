@@ -86,11 +86,12 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	private final static int uran_status = 32;
 	private final static int full_status = 31;
 	public final static int burnTime = 1200;
-	public final static int power = 1024;
+	public final static int coolantTime = 8;
+	public final static int powerPer = 1024;
 	public final static long maxTemp = 7000;
 	public final int maxUraniumPer = cfg.getInt("uranMax");
 	public final int maxCoolantPer = maxUraniumPer;
-	public final static int total = power*burnTime;
+	public final static int total = powerPer*burnTime;
 	public final static int baseExplosionRadiusPer = 32;
 	public final static int baseFalloutRadiusPer = 10;
 	public final static int falloutTickTimePer = 9000;
@@ -204,7 +205,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		int uranPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uranPer"));
 		
 		
-		long el = uranPer*power;
+		long el = uranPer*powerPer;
 		
 		if(isRunning(b)) {
 			if(b.getChunk().isLoaded()) {
@@ -234,9 +235,11 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					if(!hasCoolant(b)) {
 						temp.replace(b.getLocation(), tempe+200);
 					}else {
-						BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-coolantPer));
+						if(tick%coolantTime==0)
+							BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-coolantPer));
 					}
-					menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT,(int)Math.round(coolantPer/2)), outputcoolant);
+					if(tick%coolantTime==0)
+						menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT,(int)Math.round(coolantPer/2)), outputcoolant);
 					
 				}
 			}
@@ -359,20 +362,20 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					+" has High heat!");
 		}
 		if(menu.hasViewer()) {
-			lore.add(ChatColor.GRAY+"Coolant Per Tick: "+coolantPer);
+			lore.add(ChatColor.GRAY+"Coolant Per "+coolantTime+"t: "+coolantPer);
 			lore.add(ChatColor.GRAY+"Uran Per " + burnTime + "t: "+uranPer);
 			
 			if(isRunning) {
 				lore.add(ChatColor.YELLOW+"->Current Uran Per " + burnTime + "t: "+uran500.get(b.getLocation()));
 				lore.add(temp(temp.get(b.getLocation()))+"->Current temperature: "+temp.get(b.getLocation())+" °C");
-				long el = uran500.get(b.getLocation())*power;
+				long el = uran500.get(b.getLocation())*powerPer;
 				lore.add(ChatColor.YELLOW+"->Current power: "+ChatColor.YELLOW+el+" J/t");
 				
 			}
 			
 			long temperature = Math.round((Double.valueOf(uranPer)/Double.valueOf(coolantPer))*5500);
 			lore.add(temp(temperature)+"Estimated temperature: "+temperature+" °C");
-			long el = uranPer*power;
+			long el = uranPer*powerPer;
 			lore.add(ChatColor.GRAY+"Estimated power: "+ChatColor.YELLOW+el+" J/t");
 			
 			meta.setLore(lore);
@@ -410,7 +413,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				
 				return false;
 			});
-			menu.replaceExistingItem(coolant_status, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Status: &9"+String.valueOf(percent)+"%","&r&fCurrent coolant per tick: &7"+String.valueOf(coolantPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7-1"));
+			menu.replaceExistingItem(coolant_status, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Status: &9"+String.valueOf(percent)+"%","&r&fCurrent coolant per "+coolantTime+"t: &7"+String.valueOf(coolantPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7-1"));
 			
 			}
 		}
@@ -731,7 +734,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	@Override
 	public int getCapacity() {
 		// TODO Auto-generated method stub
-		return power*maxUraniumPer*2;
+		return powerPer*maxUraniumPer*2;
 	}
 	public BlockBreakHandler onBreak() {
         return new BlockBreakHandler(false, false) {
