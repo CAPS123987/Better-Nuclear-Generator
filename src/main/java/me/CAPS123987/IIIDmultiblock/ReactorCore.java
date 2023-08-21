@@ -86,7 +86,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	private final static int uran_status = 32;
 	private final static int full_status = 31;
 	public final static int burnTime = 1200;
-	public final static float coolantTime = 12.5f;
+	public final static int coolantTime = 8;
 	public final static int powerPer = 1024;
 	public final static long maxTemp = 7000;
 	public final int maxUraniumPer = cfg.getInt("uranMax");
