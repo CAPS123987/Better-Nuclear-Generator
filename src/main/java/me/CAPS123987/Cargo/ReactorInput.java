@@ -17,10 +17,12 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import io.github.thebusybiscuit.slimefun4.implementation.items.misc.CoolantCell;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.CAPS123987.IIIDmultiblock.ReactorCore;
 import me.CAPS123987.Item.Items;
@@ -33,20 +35,60 @@ import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
+import me.mrCookieSlime.Slimefun.api.inventory.DirtyChestMenu;
+import me.mrCookieSlime.Slimefun.api.item_transport.ItemTransportFlow;
 import net.md_5.bungee.api.ChatColor;
 
-public class ReactorInput extends SimpleSlimefunItem<BlockTicker> implements ETInventoryBlock{
-	private static final int[] inputs = {10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29,30,31,32,33,34,37,38,39,40,41,42,43};
+public class ReactorInput extends SimpleSlimefunItem<BlockTicker> /*implements ETInventoryBlock*/{
+	private static final int[] inputs = {10,11,12,14,15,16,19,20,21,23,24,25,28,29,30,32,33,34,37,38,39,41,42,43};
 	private static final int[] outputs = {};
 	private static final int[] border = {};
-	private static final int[] inputBorder = {0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,44,45,46,47,48,49,50,51,52,53};
+	private static final int[] inputBorder = {0,1,3,4,5,7,8,9,17,18,26,27,35,36,44,45,46,47,48,49,50,51,52,53,13,22,31,40};
 	private static final int[] outputBorder = {};
 	private static final Vector[] sides = {new Vector(1,0,0),new Vector(-1,0,0),new Vector(0,0,1),new Vector(0,0,-1),};
+	private static final int[] coolant = {10,11,12,19,20,21,28,29,30,37,38,39};
+	private static final int[] uran = {14,15,16,23,24,25,32,33,34,41,42,43};
 	
 	public ReactorInput() {
 		super(Items.betterReactor, Items.REACTOR_INPUT ,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_REACTOR_INPUT);
-		createPreset(this, this::constructMenu);
+		//createPreset(this, this::constructMenu);
 		addItemHandler(BlockPlaceHandler(),onBreak());
+		
+		new BlockMenuPreset(getId(),this.getItemName()) {
+
+			@Override
+			public void init() {
+				constructMenu(this);
+				
+			}
+
+			@Override
+			public boolean canOpen(Block b, Player p) {
+				return p.hasPermission("slimefun.inventory.bypass") || Slimefun.getProtectionManager().hasPermission(p, b.getLocation(), Interaction.INTERACT_BLOCK);
+			}
+
+			@Override
+			public int[] getSlotsAccessedByItemTransport(ItemTransportFlow flow) {
+				if (flow == ItemTransportFlow.INSERT) {
+                    return getInputSlots();
+                } else {
+                    return getOutputSlots();
+                }
+			}
+			@Override
+            public int[] getSlotsAccessedByItemTransport(DirtyChestMenu menu, ItemTransportFlow flow, ItemStack item) {
+                if (flow == ItemTransportFlow.INSERT) {
+                    if (SlimefunItem.getByItem(item) instanceof CoolantCell) {
+                        return coolant;
+                    } else {
+                        return uran;
+                    }
+                } else {
+                    return getOutputSlots();
+                }
+            }
+			
+		};
 	}
 	@Override
 	public BlockTicker getItemHandler() {
@@ -90,10 +132,12 @@ public class ReactorInput extends SimpleSlimefunItem<BlockTicker> implements ETI
 								menu.replaceExistingItem(i, new ItemStack(Material.AIR));
 							}
 						}
-						if(sfitem.isItem(SlimefunItems.URANIUM)) {
-							ItemStack over = menuReactor.pushItem(itemT, ReactorCore.inputs_uran);
-							if(over == null) {
-								menu.replaceExistingItem(i, new ItemStack(Material.AIR));
+						if(sfitem!=null) {
+							if(sfitem.isItem(SlimefunItems.URANIUM)) {
+								ItemStack over = menuReactor.pushItem(itemT, ReactorCore.inputs_uran);
+								if(over == null) {
+									menu.replaceExistingItem(i, new ItemStack(Material.AIR));
+								}
 							}
 						}
 					}
@@ -133,17 +177,16 @@ public class ReactorInput extends SimpleSlimefunItem<BlockTicker> implements ETI
 		};
 	}
 
-	@Override
 	public int[] getInputSlots() {
 		// TODO Auto-generated method stub
 		return inputs;
 	}
 
-	@Override
 	public int[] getOutputSlots() {
 		// TODO Auto-generated method stub
 		return outputs;
 	}
+	@SuppressWarnings("deprecation")
 	private void constructMenu(BlockMenuPreset preset) {
     	
         for (int i : border) {
@@ -158,6 +201,10 @@ public class ReactorInput extends SimpleSlimefunItem<BlockTicker> implements ETI
             preset.addItem(i, new CustomItemStack(new ItemStack(Material.ORANGE_STAINED_GLASS_PANE), " "),
                 ChestMenuUtils.getEmptyClickHandler());
         }
+        
+        preset.addItem(2, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,ChatColor.AQUA+"Reactor Coolant Cell",""),ChestMenuUtils.getEmptyClickHandler());
+        
+        preset.addItem(6, new CustomItemStack(SlimefunItems.URANIUM,ChatColor.DARK_RED+"Uranium",""),ChestMenuUtils.getEmptyClickHandler());
         
 
         for (int i : getOutputSlots()) {
