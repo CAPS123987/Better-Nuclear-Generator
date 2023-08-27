@@ -40,14 +40,14 @@ import me.mrCookieSlime.Slimefun.api.item_transport.ItemTransportFlow;
 import net.md_5.bungee.api.ChatColor;
 
 public class ReactorInput extends SimpleSlimefunItem<BlockTicker> /*implements ETInventoryBlock*/{
-	private static final int[] inputs = {10,11,12,14,15,16,19,20,21,23,24,25,28,29,30,32,33,34,37,38,39,41,42,43};
+	private static final int[] inputs = {10,11,12,13,15,16,19,20,21,22,24,25,28,29,30,31,33,34,37,38,39,40,42,43};
 	private static final int[] outputs = {};
 	private static final int[] border = {};
-	private static final int[] inputBorder = {0,1,3,4,5,7,8,9,17,18,26,27,35,36,44,45,46,47,48,49,50,51,52,53,13,22,31,40};
+	private static final int[] inputBorder = {0,1,3,4,5,7,8,9,17,18,26,27,35,36,44,45,46,47,48,49,50,51,52,53,14,23,32,41};
 	private static final int[] outputBorder = {};
 	private static final Vector[] sides = {new Vector(1,0,0),new Vector(-1,0,0),new Vector(0,0,1),new Vector(0,0,-1),};
-	private static final int[] coolant = {10,11,12,19,20,21,28,29,30,37,38,39};
-	private static final int[] uran = {14,15,16,23,24,25,32,33,34,41,42,43};
+	private static final int[] coolant = {10,11,12,13,19,20,21,22,28,29,30,31,37,38,39,40};
+	private static final int[] uran = {15,16,24,25,33,34,42,43};
 	
 	public ReactorInput() {
 		super(Items.betterReactor, Items.REACTOR_INPUT ,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_REACTOR_INPUT);

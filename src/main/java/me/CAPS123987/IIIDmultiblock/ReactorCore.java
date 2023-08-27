@@ -95,6 +95,8 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public final static int baseExplosionRadiusPer = 32;
 	public final static int baseFalloutRadiusPer = 10;
 	public final static int falloutTickTimePer = 9000;
+	public final boolean announceExplosion = cfg.getBoolean("announceReactorExplosion");
+	public final boolean announceReactorOwner = cfg.getBoolean("announceReactorOwner");
 
 	
 	private final Map<Vector, SlimefunItemStack> blocks;
@@ -271,11 +273,28 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	}
 	public void expolode(Block b, int uranPer) {
 		
+		if(announceExplosion) {
+			if(announceReactorOwner)
+				Bukkit.broadcastMessage("You hear a BOOM and a small sob from "+ BlockStorage.getLocationInfo(b.getLocation(), "owner") +" in the distance.");
+			else
+				Bukkit.broadcastMessage("You hear a BOOM in the distance.");
+		}
 		
-		
+		for(int x=-11;x!=12;x++) {
+			for(int y=-11;y!=12;y++) {
+				for(int z=-11;z!=12;z++) {
+					Location l = b.getLocation().clone().add(x, y, z);
+					if(BlockStorage.hasBlockInfo(l)) {
+						BlockStorage.clearBlockInfo(l);
+						l.getBlock().setType(Material.AIR);
+					}
+				}
+			}
+		}
 		
 		if(biggerExplosion) {
-			Bukkit.broadcastMessage(ChatColor.DARK_RED+"WARNING: SERVER LAG INCOMING");
+			if(announceExplosion)
+				Bukkit.broadcastMessage(ChatColor.DARK_RED+"WARNING: SERVER LAG INCOMING");
 			
 			for(int x=-uranPer*2;x<=uranPer*2;x=x+4) {
 				for(int z=-uranPer*2;z<=uranPer*2;z=z+4) {
@@ -299,31 +318,20 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					creeper.setFuseTicks(0);		
 				}
 			}
-		}
-		
-		for(int x=-11;x!=12;x++) {
-			for(int y=-11;y!=12;y++) {
-				for(int z=-11;z!=12;z++) {
-					Location l = b.getLocation().clone().add(x, y, z);
-					if(BlockStorage.hasBlockInfo(l)) {
-						BlockStorage.clearBlockInfo(l);
-						l.getBlock().setType(Material.AIR);
-					}
-				}
-			}
-		}
+		}		
 		
 		BetterReactor.instance.getServer().getScheduler().runTaskLater(BetterReactor.instance, new Runnable() {
 
 			@Override
 			public void run() {
-				for(int x = -baseFalloutRadiusPer*uranPer;x<baseFalloutRadiusPer*uranPer;x=x+4) {
-					for(int z = -baseFalloutRadiusPer*uranPer;z<baseFalloutRadiusPer*uranPer;z=z+4) {
+				for(int x = -baseFalloutRadiusPer*uranPer;x<baseFalloutRadiusPer*uranPer;x=x+12) {
+					for(int z = -baseFalloutRadiusPer*uranPer;z<baseFalloutRadiusPer*uranPer;z=z+12) {
 						Location Loc = b.getLocation().clone().add(x, 0, z);
 						
 						Location AreaLoc = Loc.getWorld().getHighestBlockAt(Loc).getLocation();
 						
 						AreaEffectCloud Area = (AreaEffectCloud) AreaLoc.getWorld().spawnEntity(AreaLoc, EntityType.AREA_EFFECT_CLOUD);
+						Area.setRadius(12);
 						
 						Area.addCustomEffect(new PotionEffect(PotionEffectType.HARM,5,2), true);
 						Area.setDuration(falloutTickTimePer*uranPer);

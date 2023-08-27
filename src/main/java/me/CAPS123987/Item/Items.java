@@ -39,7 +39,7 @@ public class Items {
 	        "",
 	        LoreBuilder.machine(MachineTier.END_GAME, MachineType.GENERATOR),
 	        LoreBuilder.powerBuffer(uranMax*ReactorCore.powerPer*2),
-	        LoreBuilder.powerPerSecond(uranMax*ReactorCore.powerPer/2),
+	        LoreBuilder.powerPerSecond(uranMax*ReactorCore.powerPer*2),
 	        "&8\u21E8 &e\u26A1 &7"+"Lasts "+ReactorCore.burnTime+"t",
 	        "&8\u21E8 &e\u26A1 &7"+"In total: "+df.format(uranMax*ReactorCore.powerPer*ReactorCore.burnTime/1000000f) +"M J",
 	        "&7Core of Reactor, &bshows Reactor Core Hologram"
