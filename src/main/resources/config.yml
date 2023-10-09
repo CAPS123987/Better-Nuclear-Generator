@@ -10,6 +10,14 @@ announceReactorExplosion: true
 # announce whose reactor exploded so that everyone can pity them, laugh at them, or both
 announceReactorOwner: true
 
+# when a reactor explodes should there be fallout?
+explosionFallout: true
+
+# if fallout is enabled should there be a large amount of fallout?
+# with this disabled there will only be a small amount of fallout around where the core was
+# WARNING: This will lag the server if multiple explosions occur
+largeExplosionFallout: true
+
 # set if explosions are bigger
 # WARNING: This will lag the server when explosion occurs
 biggerExplosion: false

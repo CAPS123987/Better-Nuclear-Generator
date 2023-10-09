@@ -97,6 +97,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public final static int falloutTickTimePer = 9000;
 	public final boolean announceExplosion = cfg.getBoolean("announceReactorExplosion");
 	public final boolean announceReactorOwner = cfg.getBoolean("announceReactorOwner");
+	public final boolean explosionFallout = cfg.getBoolean("explosionFallout");
+	public final boolean largeExplosionFallout = cfg.getBoolean("largeExplosionFallout");
+
 
 	
 	private final Map<Vector, SlimefunItemStack> blocks;
@@ -310,6 +313,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			for(int x=-4;x!=8;x=x+4) {
 				for(int z=-4;z!=8;z=z+4) {
 					Location l = b.getLocation().clone().add(x, 0, z);
+					
 					Creeper creeper = (Creeper) l.getWorld().spawnEntity(l, EntityType.CREEPER);
 					creeper.setInvulnerable(true);
 					creeper.ignite();
@@ -319,28 +323,37 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				}
 			}
 		}		
-		
-		BetterReactor.instance.getServer().getScheduler().runTaskLater(BetterReactor.instance, new Runnable() {
-
-			@Override
-			public void run() {
-				for(int x = -baseFalloutRadiusPer*uranPer;x<baseFalloutRadiusPer*uranPer;x=x+12) {
-					for(int z = -baseFalloutRadiusPer*uranPer;z<baseFalloutRadiusPer*uranPer;z=z+12) {
-						Location Loc = b.getLocation().clone().add(x, 0, z);
+		if(explosionFallout) {
+			BetterReactor.instance.getServer().getScheduler().runTaskLater(BetterReactor.instance, new Runnable() {
+	
+				@Override
+				public void run() {
+					if(largeExplosionFallout) {
+						for(int x = -baseFalloutRadiusPer*uranPer;x<baseFalloutRadiusPer*uranPer;x=x+12) {
+							for(int z = -baseFalloutRadiusPer*uranPer;z<baseFalloutRadiusPer*uranPer;z=z+12) {
+								Location Loc = b.getLocation().clone().add(x, 0, z);							
+								Location AreaLoc = Loc.getWorld().getHighestBlockAt(Loc).getLocation();
+								
+								AreaEffectCloud Area = (AreaEffectCloud) AreaLoc.getWorld().spawnEntity(AreaLoc, EntityType.AREA_EFFECT_CLOUD);
+								Area.setRadius(12);							
+								Area.addCustomEffect(new PotionEffect(PotionEffectType.HARM,5,2), true);
+								Area.setDuration(falloutTickTimePer*uranPer);
+								Area.setParticle(Particle.CRIT);
+							}
+						}
+					}else {
+						Location Loc = b.getLocation();
 						
-						Location AreaLoc = Loc.getWorld().getHighestBlockAt(Loc).getLocation();
-						
-						AreaEffectCloud Area = (AreaEffectCloud) AreaLoc.getWorld().spawnEntity(AreaLoc, EntityType.AREA_EFFECT_CLOUD);
-						Area.setRadius(12);
-						
+						AreaEffectCloud Area = (AreaEffectCloud) Loc.getWorld().spawnEntity(Loc, EntityType.AREA_EFFECT_CLOUD);
+						Area.setRadius(12);							
 						Area.addCustomEffect(new PotionEffect(PotionEffectType.HARM,5,2), true);
 						Area.setDuration(falloutTickTimePer*uranPer);
 						Area.setParticle(Particle.CRIT);
 					}
 				}
-			}
-			
-		}, 80L);
+				
+			}, 80L);
+		}
 		
 		
 
