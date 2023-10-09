@@ -338,7 +338,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 								Area.setRadius(12);							
 								Area.addCustomEffect(new PotionEffect(PotionEffectType.HARM,5,2), true);
 								Area.setDuration(falloutTickTimePer*uranPer);
-								Area.setParticle(Particle.CRIT);
+								Area.setParticle(Particle.REDSTONE,new DustOptions(Color.GREEN,1));
 							}
 						}
 					}else {
@@ -348,7 +348,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 						Area.setRadius(12);							
 						Area.addCustomEffect(new PotionEffect(PotionEffectType.HARM,5,2), true);
 						Area.setDuration(falloutTickTimePer*uranPer);
-						Area.setParticle(Particle.CRIT);
+						Area.setParticle(Particle.REDSTONE,new DustOptions(Color.GREEN,1));
 					}
 				}
 				
