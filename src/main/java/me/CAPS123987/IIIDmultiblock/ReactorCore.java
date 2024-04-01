@@ -219,7 +219,15 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				if(tick==1) {
 					menu.pushItem(new CustomItemStack(SlimefunItems.PLUTONIUM,Math.round(uranPer/2)), outputuran);
 				}
-				long temperature = Math.round(((Double.valueOf(uran500.get(b.getLocation())))/Double.valueOf(coolantPer))*5500.0);
+				long temperature = Math.round((
+						(
+								Double.valueOf(
+										uran500.get(b.getLocation())
+								)
+						)/Double.valueOf(coolantPer)
+					)
+				*5500.0);
+
 				long tempe = temp.get(b.getLocation());
 				
 				
