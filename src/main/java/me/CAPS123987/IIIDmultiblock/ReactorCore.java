@@ -1,47 +1,11 @@
 package me.CAPS123987.IIIDmultiblock;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Particle.DustOptions;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.Directional;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.AreaEffectCloud;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.TNTPrimed;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Fireball;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.SplashPotion;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-
-import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
-import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetComponent;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
-import io.github.thebusybiscuit.slimefun4.core.handlers.BlockUseHandler;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
@@ -55,12 +19,28 @@ import me.CAPS123987.Utils.Methodes;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ClickAction;
-import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineFuel;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
+import org.bukkit.*;
+import org.bukkit.Particle.DustOptions;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Directional;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.*;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Team;
+import org.bukkit.util.Vector;
+
+import java.util.*;
 
 public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements EnergyNetProvider, ETInventoryBlock{
 	
@@ -99,6 +79,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public final boolean announceReactorOwner = cfg.getBoolean("announceReactorOwner");
 	public final boolean explosionFallout = cfg.getBoolean("explosionFallout");
 	public final boolean largeExplosionFallout = cfg.getBoolean("largeExplosionFallout");
+	public final static int hologramTime = 200;
 
 
 	
@@ -662,27 +643,68 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		};
 	}
 	public void spawnParticeReactor(Block b) {
+		renderBadBlocks(hologramTime,b);
+		renderParticles(hologramTime,b);
+	}
+	public void renderParticles(int time,Block b){
 		Directional dir = (Directional) b.getBlockData();
-		
+
 		int rot = Methodes.fac(dir.getFacing());
-		
-		
+
+
+		int scheduleId = Bukkit.getScheduler().scheduleSyncRepeatingTask(BetterReactor.instance,()->{
+			for(Map.Entry<Vector, SlimefunItemStack> entry : blocks.entrySet()) {
+
+				final Vector relative = Methodes.rotVector(entry.getKey(), rot);
+				final SlimefunItemStack relativeItemStack = entry.getValue();
+				final Material relativeMaterial = relativeItemStack.getType();
+				final Block relativeBlock = b.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
+
+				if(!relativeBlock.getType().equals(relativeMaterial)) {
+					particle(relativeBlock, relativeMaterial);
+				}
+			}
+		},0,15);
+		Bukkit.getScheduler().runTaskLater(BetterReactor.instance, ()-> {
+			Bukkit.getScheduler().cancelTask(scheduleId);
+		}, time);
+	}
+	public void renderBadBlocks(int killTime, Block b){
+		Directional dir = (Directional) b.getBlockData();
+
+		int rot = Methodes.fac(dir.getFacing());
+
+		Team badBlockTeam = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("badBlock");
+
+		List<MagmaCube> magmaCubes = new ArrayList<MagmaCube>();
+
 		for(Map.Entry<Vector, SlimefunItemStack> entry : blocks.entrySet()) {
-			
-			final Vector relativeTemp = entry.getKey();
-			
-			final Vector relative = Methodes.rotVector(relativeTemp, rot);
-			
-            final SlimefunItemStack relativeItemStack = entry.getValue();
-            final Material relativeMaterial = relativeItemStack.getType();
-            final Block relativeBlock = b.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
-            
-            
-            
-            particle(relativeBlock, relativeMaterial);
-            //e.getBlock().getWorld().spawnParticle(Particle.REDSTONE, X, Y, Z, 50, 1 , 1 , 1 ,new DustOptions(Color.BLACK,1));
-            //relativeBlock.setType(relativeMaterial);		
+
+			final Vector relative = Methodes.rotVector(entry.getKey(), rot);
+			final SlimefunItemStack relativeItemStack = entry.getValue();
+			final Material relativeMaterial = relativeItemStack.getType();
+			final Block relativeBlock = b.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
+
+			if(!relativeBlock.getType().equals(relativeMaterial)&&!relativeBlock.getType().equals(Material.AIR)) {
+				MagmaCube magmaCube = (MagmaCube) relativeBlock.getWorld().spawnEntity(relativeBlock.getLocation().clone().add(.5,.25,.5), EntityType.MAGMA_CUBE);
+				magmaCube.setAI(false);
+				magmaCube.setSize(1);
+				magmaCube.setInvulnerable(true);
+				magmaCube.setCollidable(false);
+				magmaCube.setGravity(false);
+				magmaCube.setSilent(true);
+				magmaCube.setGlowing(true);
+				magmaCube.setInvisible(true);
+
+				badBlockTeam.addEntry(magmaCube.getUniqueId().toString());
+				magmaCubes.add(magmaCube);
+			}
 		}
+		Bukkit.getScheduler().runTaskLater(BetterReactor.instance, ()-> {
+				for(MagmaCube magmaCube : magmaCubes){
+					magmaCube.remove();
+				}
+		}, killTime);
 	}
 	public boolean checkBuild(Block b) {
 		Directional dir = (Directional) b.getBlockData();

@@ -1,7 +1,7 @@
 options:
    auto-update: true
 
-Reactor_Core_Hologram_Particles: 100
+Reactor_Core_Hologram_Particles: 40
 
 uranMax: 12
 

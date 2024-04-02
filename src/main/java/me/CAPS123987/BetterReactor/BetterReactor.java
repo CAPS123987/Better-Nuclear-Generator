@@ -2,12 +2,15 @@ package me.CAPS123987.BetterReactor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
@@ -35,6 +38,11 @@ public class BetterReactor extends JavaPlugin implements SlimefunAddon {
     public void onEnable() {
         // Read something from your config.yml
         Config cfg = new Config(this);
+
+        if(Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard().getTeam("badBlock")==null){
+            Team badBlockTeam = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam("badBlock");
+            badBlockTeam.setColor(ChatColor.RED);
+        }
 
         if (cfg.getBoolean("options.auto-update") && getDescription().getVersion().startsWith("DEV - ")) {
         	
@@ -86,8 +94,6 @@ public class BetterReactor extends JavaPlugin implements SlimefunAddon {
         
         new ReactorCore(reactor).register(this);
         new SuperFreezer().register(this);
-
-        
         
         
     }
