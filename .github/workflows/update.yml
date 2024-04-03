@@ -25,7 +25,7 @@ jobs:
       - name: Upload to Blob Builds
         uses: WalshyDev/blob-builds/gh-action@main
         with:
-          project: Better-Nucler-Reactor
+          project: Better-Nuclear-Reactor
           apiToken: ${{ secrets.BLOB_BUILDS_API_TOKEN }}
           file: ./target/BetterNuclearReactor.jar
           releaseNotes: ${{ github.event.head_commit.message }}
