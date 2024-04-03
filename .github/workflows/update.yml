@@ -27,5 +27,5 @@ jobs:
         with:
           project: Better-Nucler-Reactor
           apiToken: ${{ secrets.BLOB_BUILDS_API_TOKEN }}
-          file: ./target/BetterReactor.jar
+          file: ./target/BetterNuclearReactor.jar
           releaseNotes: ${{ github.event.head_commit.message }}
