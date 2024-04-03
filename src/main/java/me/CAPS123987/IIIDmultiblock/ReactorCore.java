@@ -190,9 +190,6 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		int coolantPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolantPer"));
 		int uranPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uranPer"));
 		
-		
-		long el = uranPer*powerPer;
-		
 		if(isRunning(b)) {
 			if(b.getChunk().isLoaded()) {
 				int tick = ticks.get(b.getLocation());
@@ -225,6 +222,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					}
 					
 					ticks.replace(b.getLocation(), tick-1);
+
+					long el = uran500.get(b.getLocation())*powerPer;
+
 					addCharge(b.getLocation(),(int)el);
 					if(!hasCoolant(b)) {
 						temp.replace(b.getLocation(), tempe+200);
