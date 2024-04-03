@@ -12,7 +12,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunIte
 import io.github.thebusybiscuit.slimefun4.implementation.items.misc.CoolantCell;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
-import me.CAPS123987.BetterReactor.BetterReactor;
+import me.CAPS123987.BetterNuclearReactor.BetterNuclearReactor;
 import me.CAPS123987.Item.Items;
 import me.CAPS123987.Utils.ETInventoryBlock;
 import me.CAPS123987.Utils.Methodes;
@@ -44,7 +44,7 @@ import java.util.*;
 
 public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements EnergyNetProvider, ETInventoryBlock{
 	
-	FileConfiguration cfg = BetterReactor.instance.getConfig();
+	FileConfiguration cfg = BetterNuclearReactor.instance.getConfig();
 	public int particles = cfg.getInt("Reactor_Core_Hologram_Particles");
 	public boolean biggerExplosion = cfg.getBoolean("biggerExplosion");
 	public final static int[] inputs = {19,28,37,25,34,43};
@@ -313,7 +313,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			}
 		}		
 		if(explosionFallout) {
-			BetterReactor.instance.getServer().getScheduler().runTaskLater(BetterReactor.instance, new Runnable() {
+			BetterNuclearReactor.instance.getServer().getScheduler().runTaskLater(BetterNuclearReactor.instance, new Runnable() {
 	
 				@Override
 				public void run() {
@@ -652,7 +652,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		int rot = Methodes.fac(dir.getFacing());
 
 
-		int scheduleId = Bukkit.getScheduler().scheduleSyncRepeatingTask(BetterReactor.instance,()->{
+		int scheduleId = Bukkit.getScheduler().scheduleSyncRepeatingTask(BetterNuclearReactor.instance,()->{
 			for(Map.Entry<Vector, SlimefunItemStack> entry : blocks.entrySet()) {
 
 				final Vector relative = Methodes.rotVector(entry.getKey(), rot);
@@ -665,7 +665,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				}
 			}
 		},0,15);
-		Bukkit.getScheduler().runTaskLater(BetterReactor.instance, ()-> {
+		Bukkit.getScheduler().runTaskLater(BetterNuclearReactor.instance, ()-> {
 			Bukkit.getScheduler().cancelTask(scheduleId);
 		}, time);
 	}
@@ -700,7 +700,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				magmaCubes.add(magmaCube);
 			}
 		}
-		Bukkit.getScheduler().runTaskLater(BetterReactor.instance, ()-> {
+		Bukkit.getScheduler().runTaskLater(BetterNuclearReactor.instance, ()-> {
 				for(MagmaCube magmaCube : magmaCubes){
 					magmaCube.remove();
 				}

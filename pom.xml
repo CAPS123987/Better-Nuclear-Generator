@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.CAPS123987</groupId>
-    <artifactId>BetterReactor</artifactId>
+    <artifactId>BetterNuclearReactor</artifactId>
     <version>1.3.0</version>
 
     <properties>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>com.github.Slimefun</groupId>
             <artifactId>Slimefun4</artifactId>
-            <version>RC-28</version>
+            <version>RC-37</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

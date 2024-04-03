@@ -8,7 +8,7 @@ author: CAPS123987
 description: Slimefun4-Addon that adds more realistic reactor
 
 ## CHANGE this to the path of the class that extends JavaPlugin.
-main: me.CAPS123987.BetterReactor.BetterReactor
+main: me.CAPS123987.BetterNuclearReactor.BetterNuclearReactor
 
 ## You can change this to link to your website or repository. You can also remove this line if you want to.
 website: https://github.com/CAPS123987/Better-Nuclear-Generator

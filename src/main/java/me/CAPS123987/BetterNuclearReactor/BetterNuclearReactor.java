@@ -1,26 +1,22 @@
-package me.CAPS123987.BetterReactor;
+package me.CAPS123987.BetterNuclearReactor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import io.github.thebusybiscuit.slimefun4.libraries.dough.updater.BlobBuildUpdater;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
-import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.updater.GitHubBuildsUpdater;
 import me.CAPS123987.Cargo.ReactorInput;
 import me.CAPS123987.Cargo.ReactorOutput;
@@ -30,8 +26,8 @@ import me.CAPS123987.Item.Items;
 import me.CAPS123987.Utils.Methodes;
 import me.CAPS123987.machines.SuperFreezer;
 
-public class BetterReactor extends JavaPlugin implements SlimefunAddon {
-	public static BetterReactor instance;
+public class BetterNuclearReactor extends JavaPlugin implements SlimefunAddon {
+	public static BetterNuclearReactor instance;
 	private static final Map<Vector, SlimefunItemStack> reactor = new LinkedHashMap<>();
 	
     @Override
@@ -45,11 +41,9 @@ public class BetterReactor extends JavaPlugin implements SlimefunAddon {
         }
 
         if (cfg.getBoolean("options.auto-update") && getDescription().getVersion().startsWith("DEV - ")) {
-        	
-        	GitHubBuildsUpdater
-        	updater = new GitHubBuildsUpdater(this, this.getFile(), "CAPS123987/Better-Nuclear-Generator/master");
+            BlobBuildUpdater
+        	updater = new BlobBuildUpdater(this, this.getFile(), "CAPS123987/Better-Nuclear-Generator/master");
         	updater.start();
-        	
         }
         
         instance = this;
@@ -118,7 +112,7 @@ public class BetterReactor extends JavaPlugin implements SlimefunAddon {
         return this;
     }
 
-	public static BetterReactor getInstance() {
+	public static BetterNuclearReactor getInstance() {
         return instance;
     }
 

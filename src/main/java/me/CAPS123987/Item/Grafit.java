@@ -6,18 +6,16 @@ import org.bukkit.block.Biome;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.thebusybiscuit.slimefun4.api.geo.GEOResource;
-import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
-import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.implementation.items.blocks.UnplaceableBlock;
-import me.CAPS123987.BetterReactor.BetterReactor;
+import me.CAPS123987.BetterNuclearReactor.BetterNuclearReactor;
 
 public class Grafit extends UnplaceableBlock implements GEOResource{
 	public Grafit() {
         super(Items.betterReactor, Items.BORIUM, RecipeType.GEO_MINER, new ItemStack[0]);
         register();
     }
-	private final NamespacedKey key = new NamespacedKey(BetterReactor.getInstance(), "Borium");
+	private final NamespacedKey key = new NamespacedKey(BetterNuclearReactor.getInstance(), "Borium");
 	@Override
 	public NamespacedKey getKey() {
 		// TODO Auto-generated method stub
