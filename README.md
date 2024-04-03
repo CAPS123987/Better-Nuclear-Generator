@@ -4,7 +4,7 @@ This addon adds better nuclear reactor
 ![image](https://github.com/CAPS123987/Better-Nuclear-Generator/assets/87692752/ad361663-bff2-4092-b64f-9268d8c26412)
 
 ## Download
-WIP
+[Download Link](https://blob.build/project/Better-Nuclear-Reactor)
 
 ## How to setup
 
