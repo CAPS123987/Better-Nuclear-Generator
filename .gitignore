@@ -1,6 +1,5 @@
 /bin/
 /.settings/
-/target/
 /.idea/
 *.iml
 .project
