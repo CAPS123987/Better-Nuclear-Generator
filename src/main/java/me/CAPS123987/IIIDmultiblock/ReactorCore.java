@@ -82,11 +82,11 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public final static int hologramTime = 200;
 
 
-	
+	private final Map<Location,Block> registeredSensors = new HashMap<>();
 	private final Map<Vector, SlimefunItemStack> blocks;
-	public HashMap<Location,Integer> ticks = new HashMap<Location,Integer>();
-	public HashMap<Location,Integer> uran500 = new HashMap<Location,Integer>();
-	public HashMap<Location,Long> temp = new HashMap<Location,Long>();
+	public Map<Location,Integer> ticks = new HashMap<>();
+	public Map<Location,Integer> uran500 = new HashMap<>();
+	public Map<Location,Long> temp = new HashMap<>();
 	
 	
 	public ReactorCore(final Map<Vector, SlimefunItemStack> blocks) {
@@ -370,6 +370,15 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			p.sendMessage(ChatColor.DARK_RED+"[REACTOR]"+ChatColor.RED+" Reactor at"+
 					ChatColor.GOLD+" x: "+b.getLocation().getBlockX()+" y: "+b.getLocation().getBlockY()+" z: "+b.getLocation().getBlockZ()+ChatColor.RED
 					+" has High heat!");
+
+			Block sensor = registeredSensors.get(b.getLocation());
+
+			final String id = BlockStorage.getLocationInfo(sensor.getLocation(), "id");
+			if(id!=null) {
+				if(id.equals(Items.HEAT_SENSOR.getItemId())) {
+					sensor.setType(Material.REDSTONE_BLOCK);
+				}
+			}
 		}
 		if(menu.hasViewer()) {
 			lore.add(ChatColor.GRAY+"Coolant Per "+coolantTime+"t: "+coolantPer);
@@ -581,7 +590,6 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		
 	}
 	
-	@SuppressWarnings("deprecation")
 	public ItemStack status(Boolean b, BlockMenu menu,Block Block) {
 		ItemStack item2 = new ItemStack(Material.FLINT_AND_STEEL);
 		ItemMeta m = item2.getItemMeta();
@@ -687,27 +695,42 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			final SlimefunItemStack relativeItemStack = entry.getValue();
 			final Material relativeMaterial = relativeItemStack.getType();
 			final Block relativeBlock = b.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
+			final String relativeId = relativeItemStack.getItemId();
 
-			if(!relativeBlock.getType().equals(relativeMaterial)&&!relativeBlock.getType().equals(Material.AIR)) {
-				MagmaCube magmaCube = (MagmaCube) relativeBlock.getWorld().spawnEntity(relativeBlock.getLocation().clone().add(.5,.25,.5), EntityType.MAGMA_CUBE);
-				magmaCube.setAI(false);
-				magmaCube.setSize(1);
-				magmaCube.setInvulnerable(true);
-				magmaCube.setCollidable(false);
-				magmaCube.setGravity(false);
-				magmaCube.setSilent(true);
-				magmaCube.setGlowing(true);
-				magmaCube.setInvisible(true);
+			if(!relativeBlock.getType().equals(relativeMaterial)) {
 
-				badBlockTeam.addEntry(magmaCube.getUniqueId().toString());
-				magmaCubes.add(magmaCube);
+				magmaCubes.add(summonEntityBlock(relativeBlock,badBlockTeam));
+
+			}else if(!relativeBlock.getType().equals(Material.AIR)){
+				final String id = BlockStorage.getLocationInfo(relativeBlock.getLocation().clone(), "id");
+				if(id!=null) {
+					if(id.equals(relativeId)) {
+						continue;
+					}
+				}
+				magmaCubes.add(summonEntityBlock(relativeBlock,badBlockTeam));
 			}
+
 		}
 		Bukkit.getScheduler().runTaskLater(BetterNuclearReactor.instance, ()-> {
 				for(MagmaCube magmaCube : magmaCubes){
 					magmaCube.remove();
 				}
 		}, killTime);
+	}
+	public MagmaCube summonEntityBlock(Block b,Team badBlockTeam){
+		MagmaCube magmaCube = (MagmaCube) b.getWorld().spawnEntity(b.getLocation().clone().add(.5,.25,.5), EntityType.MAGMA_CUBE);
+		magmaCube.setAI(false);
+		magmaCube.setSize(1);
+		magmaCube.setInvulnerable(true);
+		magmaCube.setCollidable(false);
+		magmaCube.setGravity(false);
+		magmaCube.setSilent(true);
+		magmaCube.setGlowing(true);
+		magmaCube.setInvisible(true);
+
+		badBlockTeam.addEntry(magmaCube.getUniqueId().toString());
+		return magmaCube;
 	}
 	public boolean checkBuild(Block b) {
 		Directional dir = (Directional) b.getBlockData();
@@ -723,25 +746,59 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
             
             final Material relativeMaterial = relativeItemStack.getType();
             final Block relativeBlock = b.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
-            
-            if(relativeBlock.getType().equals(relativeMaterial)) {
+
+			final Material relativeBlockMaterial = relativeBlock.getType();
+
+			boolean isHeatSensor = relativeBlockMaterial.equals(Material.REDSTONE_BLOCK) || relativeBlockMaterial.equals(Material.POLISHED_DEEPSLATE);
+
+			if(relativeBlockMaterial.equals(relativeMaterial)||
+					(isHeatSensor &&relativeMaterial.equals(Material.GRAY_STAINED_GLASS))) {
+
             	final String id = BlockStorage.getLocationInfo(relativeBlock.getLocation(), "id");
-            	if(id==null) {
-            		
-            		return false;
-            	}
-            	if(id.equals(relativeId)) {
-            		
-            	}else {
-            		
-            		return false;
-            	}
+
+				if(!isHeatSensor){
+					if(id==null) {
+						Bukkit.broadcastMessage("id is null"+relativeBlock.getLocation());
+						return false;
+					}
+					if(!id.equals(relativeId)) {
+						Bukkit.broadcastMessage("id is not good "+relativeBlock.getLocation()+" "+id+" "+relativeId);
+						return false;
+					}
+				}else{
+					if(id==null) {
+						Bukkit.broadcastMessage("id is null 2"+relativeBlock.getLocation());
+						return false;
+					}
+					if(!id.equals(Items.HEAT_SENSOR.getItemId())) {
+						Bukkit.broadcastMessage("id is not good2"+relativeBlock.getLocation());
+						return false;
+					}
+                    if(registeredSensors.get(b.getLocation())==null){
+						registeredSensors.put(b.getLocation(), relativeBlock);
+					} else if (registeredSensors.get(b.getLocation()).getLocation()!=relativeBlock.getLocation()){
+						relativeBlock.breakNaturally();
+						BlockStorage.clearBlockInfo(relativeBlock.getLocation());
+					}
+				}
             }else {
-            	
+				Bukkit.broadcastMessage("Bad material"+relativeBlock.getLocation());
             	return false;
             }
             
 		}
+		if(registeredSensors.get(b.getLocation())!=null){
+			final String id = BlockStorage.getLocationInfo(registeredSensors.get(b.getLocation()).getLocation(), "id");
+			if(id==null) {
+				registeredSensors.put(b.getLocation(), null);
+
+			}else {
+				if(!id.equals(Items.HEAT_SENSOR.getItemId())) {
+					registeredSensors.put(b.getLocation(), null);
+				}
+			}
+		}
+
 		return true;
 	}
 	public void particle(Block b, Material m) {

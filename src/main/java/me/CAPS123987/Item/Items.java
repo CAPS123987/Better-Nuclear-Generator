@@ -42,6 +42,14 @@ public class Items {
 	        "&7Core of Reactor, &bshows Reactor Core Hologram",
 			"&7Every block required to build, has the &bColor in description"
 	    );
+	public static final SlimefunItemStack HEAT_SENSOR = new SlimefunItemStack("HEAT_SENSOR",
+			Material.POLISHED_DEEPSLATE,
+			ChatColor.RESET+"Heat Sensor",
+	        "",
+	        "&7Detects heat in the reactor",
+	        "&7Outputs redstone signal when tepmerature is too high",
+			"&7You can replace lead glass with this sensor"
+	);
 	public static final SlimefunItemStack HEATED_COOLANT = new SlimefunItemStack("HEATED_COOLANT",
 			"de4073be40cb3deb310a0be959b4cac68e825372728fafb6c2973e4e7c33",
 	        ChatColor.RESET+"Heated Coolant",
