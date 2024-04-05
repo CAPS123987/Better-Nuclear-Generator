@@ -39,7 +39,8 @@ public class Items {
 	        LoreBuilder.powerPerSecond(ReactorCore.powerPer)+" per 1 uran (up to "+uranMax*ReactorCore.powerPer+" J/s)",
 	        "&8\u21E8 &e\u26A1 &7"+"Lasts "+ReactorCore.burnTime+"t",
 	        "&8\u21E8 &e\u26A1 &7"+"Per 1 uran in total: "+df.format(ReactorCore.powerPer*ReactorCore.burnTime/1000000f) +"M J",
-	        "&7Core of Reactor, &bshows Reactor Core Hologram"
+	        "&7Core of Reactor, &bshows Reactor Core Hologram",
+			"&7Every block required to build, has the &bColor in description"
 	    );
 	public static final SlimefunItemStack HEATED_COOLANT = new SlimefunItemStack("HEATED_COOLANT",
 			"de4073be40cb3deb310a0be959b4cac68e825372728fafb6c2973e4e7c33",

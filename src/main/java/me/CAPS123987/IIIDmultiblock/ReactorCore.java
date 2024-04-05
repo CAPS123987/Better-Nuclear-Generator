@@ -202,7 +202,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 								Double.valueOf(
 										uran500.get(b.getLocation())
 								)
-						)/Double.valueOf(coolantPer)
+						)/ (double) coolantPer
 					)
 				*5500.0);
 
@@ -365,7 +365,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			ChatColor.GOLD+" x: "+b.getLocation().getBlockX()+" y: "+b.getLocation().getBlockY()+" z: "+b.getLocation().getBlockZ()+ChatColor.RED
 			+" has "+ChatColor.YELLOW+uran_out+ChatColor.RED+" uran waste in output");
 		}
-		if(isRunning&&temp.get(b.getLocation())>6000) {
+		if(isRunning&&temp.get(b.getLocation())>5600) {
 			lore.add(ChatColor.DARK_RED+"High heat");
 			p.sendMessage(ChatColor.DARK_RED+"[REACTOR]"+ChatColor.RED+" Reactor at"+
 					ChatColor.GOLD+" x: "+b.getLocation().getBlockX()+" y: "+b.getLocation().getBlockY()+" z: "+b.getLocation().getBlockZ()+ChatColor.RED
@@ -403,10 +403,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void coolant_status(Block b,BlockMenu menu,int coolant) {
 		if(menu.hasViewer()) {
-			double percent = (Double.valueOf(coolant)/Double.valueOf(maxcoolant))*100;
+			double percent = ((double) coolant / (double) maxcoolant)*100;
 			percent= Math.round(percent);
 			int coolantPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(),"coolantPer"));
 			
@@ -428,10 +427,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			}
 		}
 
-	@SuppressWarnings("deprecation")
 	public void uran_status(Block b,BlockMenu menu,int uran) {
 		if(menu.hasViewer()) {
-			double percent = (Double.valueOf(uran)/Double.valueOf(maxuran))*100;
+			double percent = ((double) uran / (double) maxuran)*100;
 			percent= Math.round(percent);
 			
 			int uranPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(),"uranPer"));
@@ -635,6 +633,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				BlockStorage.addBlockInfo(e.getBlock(),"uranPer","1");
 				BlockStorage.addBlockInfo(e.getBlock(),"coolantPer","2");
 				BlockStorage.addBlockInfo(e.getBlock(),"owner",e.getPlayer().getName());
+				BlockStorage.addBlockInfo(e.getBlock(),"particles","true");
 				spawnParticeReactor(e.getBlock());
 				
 				
@@ -643,8 +642,11 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		};
 	}
 	public void spawnParticeReactor(Block b) {
-		renderBadBlocks(hologramTime,b);
-		renderParticles(hologramTime,b);
+		if(BlockStorage.getLocationInfo(b.getLocation(), "particles").equals("true")) {
+			BlockStorage.addBlockInfo(b,"particles","false");
+			renderBadBlocks(hologramTime, b);
+			renderParticles(hologramTime, b);
+		}
 	}
 	public void renderParticles(int time,Block b){
 		Directional dir = (Directional) b.getBlockData();
@@ -667,6 +669,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		},0,15);
 		Bukkit.getScheduler().runTaskLater(BetterNuclearReactor.instance, ()-> {
 			Bukkit.getScheduler().cancelTask(scheduleId);
+			BlockStorage.addBlockInfo(b,"particles","true");
 		}, time);
 	}
 	public void renderBadBlocks(int killTime, Block b){
