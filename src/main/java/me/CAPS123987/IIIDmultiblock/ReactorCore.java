@@ -39,6 +39,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
+import org.bukkit.util.io.BukkitObjectInputStream;
 
 import java.util.*;
 
@@ -643,8 +644,8 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				BlockStorage.addBlockInfo(e.getBlock(),"owner",e.getPlayer().getName());
 				BlockStorage.addBlockInfo(e.getBlock(),"particles","true");
 				spawnParticeReactor(e.getBlock());
-				
-				
+
+
 			}
 			
 		};
@@ -693,15 +694,11 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 
 			final Vector relative = Methodes.rotVector(entry.getKey(), rot);
 			final SlimefunItemStack relativeItemStack = entry.getValue();
-			final Material relativeMaterial = relativeItemStack.getType();
+			//final Material relativeMaterial = relativeItemStack.getType();
 			final Block relativeBlock = b.getRelative(relative.getBlockX(), relative.getBlockY(), relative.getBlockZ());
 			final String relativeId = relativeItemStack.getItemId();
 
-			if(!relativeBlock.getType().equals(relativeMaterial)) {
-
-				magmaCubes.add(summonEntityBlock(relativeBlock,badBlockTeam));
-
-			}else if(!relativeBlock.getType().equals(Material.AIR)){
+			if(!relativeBlock.getType().equals(Material.AIR)){
 				final String id = BlockStorage.getLocationInfo(relativeBlock.getLocation().clone(), "id");
 				if(id!=null) {
 					if(id.equals(relativeId)) {
@@ -774,11 +771,10 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 						Bukkit.broadcastMessage("id is not good2"+relativeBlock.getLocation());
 						return false;
 					}
-                    if(registeredSensors.get(b.getLocation())==null){
-						registeredSensors.put(b.getLocation(), relativeBlock);
-					} else if (registeredSensors.get(b.getLocation()).getLocation()!=relativeBlock.getLocation()){
-						relativeBlock.breakNaturally();
-						BlockStorage.clearBlockInfo(relativeBlock.getLocation());
+                    registeredSensors.putIfAbsent(b.getLocation(), relativeBlock);
+					if(!registeredSensors.get(b.getLocation()).equals(relativeBlock)){
+						Bukkit.getPluginManager().callEvent(new BlockBreakEvent(relativeBlock, Bukkit.getPlayer(BlockStorage.getLocationInfo(b.getLocation(), "owner"))));
+						relativeBlock.setType(Material.AIR);
 					}
 				}
             }else {

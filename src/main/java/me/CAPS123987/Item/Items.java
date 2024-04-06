@@ -92,6 +92,11 @@ public class Items {
 			ChatColor.RESET+"Borium",
 	        ""
 	    );
+	public static final SlimefunItemStack GRAPHITE = new SlimefunItemStack("GRAPHITE",
+			Material.GUNPOWDER,
+			ChatColor.RESET+"Graphite",
+			""
+	);
 	public static final SlimefunItemStack REACTOR_INPUT = new SlimefunItemStack("REACTOR_INPUT",
 			Material.LIGHT_BLUE_WOOL,
 	        ChatColor.RESET+"Reactor Input",
