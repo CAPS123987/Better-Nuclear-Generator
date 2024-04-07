@@ -191,7 +191,12 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		int uran = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uran"));
 		int coolantPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolantPer"));
 		int uranPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "uranPer"));
-		
+
+		if(isStopEnabled(b)){
+			temp.replace(b.getLocation(), 5500L);
+			ticks.put(b.getLocation(), 0);
+			return;
+		}
 		if(isRunning(b)) {
 			if(b.getChunk().isLoaded()) {
 				int tick = ticks.get(b.getLocation());
@@ -259,9 +264,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		}
 		
 		if(temp.containsKey(b.getLocation())) {
-			temp.replace(b.getLocation(), 5500L/*temperature*/);
+			temp.replace(b.getLocation(), 5500L);
 		}else {
-			temp.put(b.getLocation(), 5500L/*temperature*/);
+			temp.put(b.getLocation(), 5500L);
 		}
 		
 	}
@@ -781,7 +786,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 						relativeBlock.setType(Material.AIR);
 					}
 				}
-				if(isStopper&&relativeTemp.equals(new Vector(0, 5, 2))) {
+				if(isStopper&&(relativeTemp.getBlockX()==0&&relativeTemp.getBlockY()==5&&relativeTemp.getBlockZ()==2)){
 					if(id==null) {
 						return false;
 					}
@@ -925,6 +930,18 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public int getGeneratedOutput(Location l, Config data) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	public boolean isStopEnabled(Block b) {
+		if(registeredStopper.get(b.getLocation())==null) {
+			return false;
+		}
+		Block stop = registeredStopper.get(b.getLocation());
+		String status = BlockStorage.getLocationInfo(stop.getLocation(), "status");
+
+		if(status == null){
+			return false;
+		}
+        return !status.equals("ON");
 	}
 
 }
