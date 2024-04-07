@@ -50,6 +50,13 @@ public class Items {
 	        "&7Outputs redstone signal when tepmerature is too high",
 			"&7You can replace lead glass with this sensor"
 	);
+	public static final SlimefunItemStack REACTOR_STOP = new SlimefunItemStack("REACTOR_STOP",
+			Material.REDSTONE_LAMP,
+			ChatColor.RESET+"Reactor Stop",
+			"",
+			"&7When powered, stops the reactor",
+			"&eConsumes 128 Graphite for one stop"
+	);
 	public static final SlimefunItemStack HEATED_COOLANT = new SlimefunItemStack("HEATED_COOLANT",
 			"de4073be40cb3deb310a0be959b4cac68e825372728fafb6c2973e4e7c33",
 	        ChatColor.RESET+"Heated Coolant",

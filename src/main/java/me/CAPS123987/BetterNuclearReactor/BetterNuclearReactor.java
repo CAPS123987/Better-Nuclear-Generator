@@ -7,6 +7,7 @@ import java.util.Objects;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.updater.BlobBuildUpdater;
 import me.CAPS123987.Item.Graphite;
 import me.CAPS123987.Machines.HeatSensor;
+import me.CAPS123987.Machines.ReactorStop;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
@@ -58,6 +59,7 @@ public class BetterNuclearReactor extends JavaPlugin implements SlimefunAddon {
         new ReactorInput().register(this);
         new ReactorOutput().register(this);
         new HeatSensor().register(this);
+        new ReactorStop().register(this);
         
         //bottom
         Methodes.areaList(-2, -1, 0, 2, -1, 4, Items.LEAD_BLOCK, reactor);

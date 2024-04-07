@@ -84,6 +84,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 
 
 	private final Map<Location,Block> registeredSensors = new HashMap<>();
+	private final Map<Location,Block> registeredStopper = new HashMap<>();
 	private final Map<Vector, SlimefunItemStack> blocks;
 	public Map<Location,Integer> ticks = new HashMap<>();
 	public Map<Location,Integer> uran500 = new HashMap<>();
@@ -243,7 +244,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		if(!hasFuel(b)) {
 			return;
 		}
-		long temperature = Math.round((Double.valueOf(uranPer)/Double.valueOf(coolantPer))*5500);
+		//long temperature = Math.round((Double.valueOf(uranPer)/Double.valueOf(coolantPer))*5500);
 		BlockStorage.addBlockInfo(b,"uran", String.valueOf(uran-uranPer));
 		if(ticks.containsKey(b.getLocation())) {
 			ticks.replace(b.getLocation(), burnTime);
@@ -258,9 +259,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		}
 		
 		if(temp.containsKey(b.getLocation())) {
-			temp.replace(b.getLocation(), temperature);
+			temp.replace(b.getLocation(), 5500L/*temperature*/);
 		}else {
-			temp.put(b.getLocation(), temperature);
+			temp.put(b.getLocation(), 5500L/*temperature*/);
 		}
 		
 	}
@@ -353,6 +354,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		ItemMeta meta = item.getItemMeta();
 		List<String> lore = new ArrayList<String>();
 		lore.add(ChatColor.GOLD+"Is Running: "+isRunning);
+
+		lore.add(ChatColor.GOLD+"Has heat sensor: "+(registeredSensors.get(b.getLocation())!=null));
+		lore.add(ChatColor.GOLD+"Has reactor stop: "+(registeredStopper.get(b.getLocation())!=null));
 		
 		if(coolant_out>32) {
 			lore.add(ChatColor.RED+"Heated Coolant in output");
@@ -374,10 +378,12 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 
 			Block sensor = registeredSensors.get(b.getLocation());
 
-			final String id = BlockStorage.getLocationInfo(sensor.getLocation(), "id");
-			if(id!=null) {
-				if(id.equals(Items.HEAT_SENSOR.getItemId())) {
-					sensor.setType(Material.REDSTONE_BLOCK);
+			if(sensor!=null) {
+				final String id = BlockStorage.getLocationInfo(sensor.getLocation(), "id");
+				if(id!=null) {
+					if(id.equals(Items.HEAT_SENSOR.getItemId())) {
+						sensor.setType(Material.REDSTONE_BLOCK);
+					}
 				}
 			}
 		}
@@ -432,7 +438,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				
 				return false;
 			});
-			menu.replaceExistingItem(coolant_status, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Status: &9"+String.valueOf(percent)+"%","&r&fCurrent coolant per "+coolantTime+"t: &7"+String.valueOf(coolantPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7-1"));
+			menu.replaceExistingItem(coolant_status, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Status: &9"+String.valueOf(percent)+"% ("+coolant+"/"+maxcoolant+")","&r&fCurrent coolant per "+coolantTime+"t: &7"+String.valueOf(coolantPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7-1"));
 			
 			}
 		}
@@ -457,7 +463,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 				return false;
 			});
 			
-			menu.replaceExistingItem(uran_status, new CustomItemStack(SlimefunItems.URANIUM,"&cFuel Status: &4"+String.valueOf(percent)+"%","&r&fCurrent uran per "+burnTime +"t: &7"+String.valueOf(uranPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7+1"));
+			menu.replaceExistingItem(uran_status, new CustomItemStack(SlimefunItems.URANIUM,"&cFuel Status: &4"+String.valueOf(percent)+"% ("+uran+"/"+maxuran+")","&r&fCurrent uran per "+burnTime +"t: &7"+String.valueOf(uranPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7+1"));
 		}
 	}
 	
@@ -747,28 +753,26 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			final Material relativeBlockMaterial = relativeBlock.getType();
 
 			boolean isHeatSensor = relativeBlockMaterial.equals(Material.REDSTONE_BLOCK) || relativeBlockMaterial.equals(Material.POLISHED_DEEPSLATE);
+			boolean isStopper = relativeBlockMaterial.equals(Material.REDSTONE_LAMP);
 
 			if(relativeBlockMaterial.equals(relativeMaterial)||
-					(isHeatSensor &&relativeMaterial.equals(Material.GRAY_STAINED_GLASS))) {
+					(isHeatSensor &&relativeMaterial.equals(Material.GRAY_STAINED_GLASS))||isStopper) {
 
             	final String id = BlockStorage.getLocationInfo(relativeBlock.getLocation(), "id");
 
-				if(!isHeatSensor){
+				if(!isHeatSensor&&!isStopper){
 					if(id==null) {
-						Bukkit.broadcastMessage("id is null"+relativeBlock.getLocation());
 						return false;
 					}
 					if(!id.equals(relativeId)) {
-						Bukkit.broadcastMessage("id is not good "+relativeBlock.getLocation()+" "+id+" "+relativeId);
 						return false;
 					}
-				}else{
+				}
+				if(isHeatSensor){
 					if(id==null) {
-						Bukkit.broadcastMessage("id is null 2"+relativeBlock.getLocation());
 						return false;
 					}
 					if(!id.equals(Items.HEAT_SENSOR.getItemId())) {
-						Bukkit.broadcastMessage("id is not good2"+relativeBlock.getLocation());
 						return false;
 					}
                     registeredSensors.putIfAbsent(b.getLocation(), relativeBlock);
@@ -777,8 +781,16 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 						relativeBlock.setType(Material.AIR);
 					}
 				}
+				if(isStopper&&relativeTemp.equals(new Vector(0, 5, 2))) {
+					if(id==null) {
+						return false;
+					}
+					if(!id.equals(Items.REACTOR_STOP.getItemId())) {
+						return false;
+					}
+					registeredStopper.put(b.getLocation(), relativeBlock);
+				}
             }else {
-				Bukkit.broadcastMessage("Bad material"+relativeBlock.getLocation());
             	return false;
             }
             
