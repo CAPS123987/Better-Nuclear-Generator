@@ -487,7 +487,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			percent= Math.round(percent);
 
 			int uranPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(),"uranPer"));
-			
+
 			menu.replaceExistingItem(uran_status, new CustomItemStack(SlimefunItems.URANIUM,"&cFuel Status: &4"+String.valueOf(percent)+"% ("+uran+"/"+maxuran+")","&r&fCurrent uran per "+burnTime +"t: &7"+String.valueOf(uranPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7+1"));
 		}
 	}
