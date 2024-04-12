@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import io.github.thebusybiscuit.slimefun4.libraries.dough.updater.BlobBuildUpdater;
+import me.CAPS123987.Item.Graphite;
+import me.CAPS123987.Machines.HeatSensor;
+import me.CAPS123987.Machines.ReactorStop;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
@@ -17,14 +20,13 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.config.Config;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.updater.GitHubBuildsUpdater;
 import me.CAPS123987.Cargo.ReactorInput;
 import me.CAPS123987.Cargo.ReactorOutput;
 import me.CAPS123987.IIIDmultiblock.ReactorCore;
-import me.CAPS123987.Item.Grafit;
-import me.CAPS123987.Item.Items;
+import me.CAPS123987.Item.Borium;
 import me.CAPS123987.Utils.Methodes;
-import me.CAPS123987.machines.SuperFreezer;
+import me.CAPS123987.Machines.SuperFreezer;
+import me.CAPS123987.Item.Items;
 
 public class BetterNuclearReactor extends JavaPlugin implements SlimefunAddon {
 	public static BetterNuclearReactor instance;
@@ -50,11 +52,14 @@ public class BetterNuclearReactor extends JavaPlugin implements SlimefunAddon {
         new SlimefunItem(Items.betterReactor, Items.LEAD_GLASS, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_LEAD_GLASS,new SlimefunItemStack(Items.LEAD_GLASS, 8)).register(this);
         new SlimefunItem(Items.betterReactor, Items.LEAD_BLOCK, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_LEAD_BLOCK).register(this);
         new SlimefunItem(Items.betterReactor, Items.BORIUM_ROD, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_BORIUM_ROD).register(this);
-        new SlimefunItem(Items.betterReactor, Items.REACTOR_HATCH ,RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_REACTOR_HATCH).register(this);
+        new SlimefunItem(Items.betterReactor, Items.REACTOR_HATCH ,Items.BETTER_REACTOR , Items.recipe_REACTOR_HATCH).register(this);
         new SlimefunItem(Items.betterReactor, Items.HEATED_COOLANT ,RecipeType.NULL, new ItemStack[0]).register(this);
-        new Grafit().register(this);
+        new Borium().register(this);
+        new Graphite().register(this);
         new ReactorInput().register(this);
         new ReactorOutput().register(this);
+        new HeatSensor().register(this);
+        new ReactorStop().register(this);
         
         //bottom
         Methodes.areaList(-2, -1, 0, 2, -1, 4, Items.LEAD_BLOCK, reactor);

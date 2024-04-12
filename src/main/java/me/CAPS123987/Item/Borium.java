@@ -10,8 +10,8 @@ import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.implementation.items.blocks.UnplaceableBlock;
 import me.CAPS123987.BetterNuclearReactor.BetterNuclearReactor;
 
-public class Grafit extends UnplaceableBlock implements GEOResource{
-	public Grafit() {
+public class Borium extends UnplaceableBlock implements GEOResource{
+	public Borium() {
         super(Items.betterReactor, Items.BORIUM, RecipeType.GEO_MINER, new ItemStack[0]);
         register();
     }
