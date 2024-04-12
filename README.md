@@ -62,6 +62,15 @@ When reaction is done it puts waste in the form of plutonium that goes in red wo
 -When heat is too high
 
 -When not enought coolant
+## Advanced Controls
+### Heat Sensor
+Heat Sensor outputs redstone (turns to redstone block) when heat is too high
+Lead glass can be replaced with this block
+
+<img src="https://github.com/CAPS123987/Better-Nuclear-Generator/blob/master/pictures/heatdef.png?raw=true" width =40%>
+<img src="https://github.com/CAPS123987/Better-Nuclear-Generator/blob/master/pictures/heatred.png?raw=true" width =40%>
+
+To turn it back to off state you need to mine it and place it back
 
 ## Thanks!
 
