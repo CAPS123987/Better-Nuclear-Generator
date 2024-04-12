@@ -39,7 +39,8 @@ public class Items {
 	        "&8\u21E8 &e\u26A1 &7"+"Lasts "+ReactorCore.burnTime+"t",
 	        "&8\u21E8 &e\u26A1 &7"+"Per 1 uran in total: "+df.format(ReactorCore.powerPer*ReactorCore.burnTime/1000000f) +"M J",
 	        "&7Core of Reactor, &bshows Reactor Core Hologram",
-			"&7Every block required to build, has the &bColor in description"
+			"&7Every block required to build, has the &bColor in description",
+			"&8&oHelp: github.com/CAPS123987/Better-Nuclear-Generator"
 	    );
 	public static final SlimefunItemStack HEAT_SENSOR = new SlimefunItemStack("HEAT_SENSOR",
 			Material.POLISHED_DEEPSLATE,
