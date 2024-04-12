@@ -94,7 +94,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	public ReactorCore(final Map<Vector, SlimefunItemStack> blocks) {
 		super(Items.betterReactor,Items.REACTOR_CORE, RecipeType.ENHANCED_CRAFTING_TABLE, Items.recipe_REACTOR_CORE);
 		this.blocks = blocks;
-		createPreset(this, this::constructMenu);
+		createPreset(this, this::constructMenu,this::newInstance);
 		addItemHandler(BlockPlaceHandler(), onBreak());
 	}
 	
@@ -185,6 +185,49 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 			
 		};
 	}
+	public void newInstance(BlockMenu menu,Block b){
+		menu.addMenuClickHandler(10,(pl, slot, item, action)->{
+			BlockStorage.addBlockInfo(b, "coolant", "0");
+			return false;
+		});
+		menu.addMenuClickHandler(16,(pl, slot, item, action)->{
+			BlockStorage.addBlockInfo(b, "uran", "0");
+			return false;
+		});
+
+		menu.addMenuClickHandler(coolant_status, (pl, slot, item, action)-> {
+			int coolantPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(),"coolantPer"));
+			if(!action.isRightClicked()) {
+				if(coolantPer!=maxCoolantPer) {
+					BlockStorage.addBlockInfo(b, "coolantPer", String.valueOf(coolantPer+1));
+				}
+			}else {
+				if(coolantPer!=1) {
+					BlockStorage.addBlockInfo(b, "coolantPer", String.valueOf(coolantPer-1));
+				}
+			}
+
+			return false;
+		});
+		menu.addMenuClickHandler(uran_status, (pl, slot, item, action)-> {
+			int uranPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(),"uranPer"));
+			if(!action.isRightClicked()) {
+				if(uranPer!= maxUraniumPer) {
+					BlockStorage.addBlockInfo(b, "uranPer", String.valueOf(uranPer+1));
+				}
+			}else {
+				if(uranPer!=1) {
+					BlockStorage.addBlockInfo(b, "uranPer", String.valueOf(uranPer-1));
+				}
+			}
+
+			return false;
+		});
+		menu.addMenuClickHandler(4, (p, slot, item, action) -> {
+			spawnParticeReactor(b);
+			return false;
+		});
+	}
 	
 	public void runReaction(Block b,BlockMenu menu, int coolant_out, int uran_out) {
 		int coolant = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolant"));
@@ -227,7 +270,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					if(tempe>temperature) {
 						temp.replace(b.getLocation(), tempe-((tempe-temperature)/10));
 					}
-					
+
 					ticks.replace(b.getLocation(), tick-1);
 
 					long el = uran500.get(b.getLocation())*powerPer;
@@ -236,12 +279,14 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					if(!hasCoolant(b)) {
 						temp.replace(b.getLocation(), tempe+200);
 					}else {
-						if(tick%coolantTime==0)
-							BlockStorage.addBlockInfo(b,"coolant", String.valueOf(coolant-coolantPer));
+						if(tick%coolantTime==0) {
+							if(coolant - coolantPer>0) {
+								BlockStorage.addBlockInfo(b, "coolant", String.valueOf(coolant - coolantPer));
+							}
+							menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT, (int) Math.round(coolantPer / 2)), outputcoolant);
+						}
 					}
-					if(tick%coolantTime==0)
-						menu.pushItem(new CustomItemStack(Items.HEATED_COOLANT,(int)Math.round(coolantPer/2)), outputcoolant);
-					
+
 				}
 			}
 			return;
@@ -428,21 +473,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		if(menu.hasViewer()) {
 			double percent = ((double) coolant / (double) maxcoolant)*100;
 			percent= Math.round(percent);
+
 			int coolantPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(),"coolantPer"));
-			
-			menu.addMenuClickHandler(coolant_status, (pl, slot, item, action)-> {
-				if(!action.isRightClicked()) {
-					if(coolantPer!=maxCoolantPer) {
-						BlockStorage.addBlockInfo(b, "coolantPer", String.valueOf(coolantPer+1));
-					}
-				}else {
-					if(coolantPer!=1) {
-						BlockStorage.addBlockInfo(b, "coolantPer", String.valueOf(coolantPer-1));
-					}
-				}
-				
-				return false;
-			});
+
 			menu.replaceExistingItem(coolant_status, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Status: &9"+String.valueOf(percent)+"% ("+coolant+"/"+maxcoolant+")","&r&fCurrent coolant per "+coolantTime+"t: &7"+String.valueOf(coolantPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7-1"));
 			
 			}
@@ -452,21 +485,8 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		if(menu.hasViewer()) {
 			double percent = ((double) uran / (double) maxuran)*100;
 			percent= Math.round(percent);
-			
+
 			int uranPer = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(),"uranPer"));
-			menu.addMenuClickHandler(uran_status, (pl, slot, item, action)-> {
-				if(!action.isRightClicked()) {
-					if(uranPer!= maxUraniumPer) {
-						BlockStorage.addBlockInfo(b, "uranPer", String.valueOf(uranPer+1));
-					}
-				}else {
-					if(uranPer!=1) {
-						BlockStorage.addBlockInfo(b, "uranPer", String.valueOf(uranPer-1));
-					}
-				}
-				
-				return false;
-			});
 			
 			menu.replaceExistingItem(uran_status, new CustomItemStack(SlimefunItems.URANIUM,"&cFuel Status: &4"+String.valueOf(percent)+"% ("+uran+"/"+maxuran+")","&r&fCurrent uran per "+burnTime +"t: &7"+String.valueOf(uranPer),"&r&fLeft Click: &7+1", "&r&fRight Click: &7+1"));
 		}
@@ -483,11 +503,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 	}
 	public boolean hasCoolant(Block b) {
 		final int coolant = Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolant"));
-		if(coolant>0) {
-			return true;
-		}else {
-			return false;
-		}
+        return coolant >= Integer.parseInt(BlockStorage.getLocationInfo(b.getLocation(), "coolantPer"));
 	}
 	public boolean isRunning(Block b) {
 		if(ticks.containsKey(b.getLocation())) {
@@ -613,10 +629,6 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 		}else {
 			lore.add(ChatColor.RED+"Multiblock not complete "+ChatColor.DARK_RED+"✘");
 			lore.add(ChatColor.GRAY+"(Click to show "+ChatColor.AQUA+"Reactor Core Hologram"+ChatColor.GRAY+")");
-			menu.addMenuClickHandler(4, (p, slot, item, action) -> {
-				spawnParticeReactor(Block);
-                return false;
-            });
 		}
 		m.setLore(lore);
 		item2.setItemMeta(m);
@@ -794,6 +806,11 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 						return false;
 					}
 					registeredStopper.put(b.getLocation(), relativeBlock);
+
+					BlockStorage.addBlockInfo(relativeBlock, "player", BlockStorage.getLocationInfo(b.getLocation(), "owner"));
+				}
+				if(isStopper&&!(relativeTemp.getBlockX()==0&&relativeTemp.getBlockY()==5&&relativeTemp.getBlockZ()==2)){
+					return false;
 				}
             }else {
             	return false;
@@ -883,9 +900,9 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
     }
 	@SuppressWarnings("deprecation")
 	private void constructMenu(BlockMenuPreset preset) {
-		preset.addItem(10, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Slot", "", "&fThis Slot accepts Coolant Cells"),
-                ChestMenuUtils.getEmptyClickHandler());
-		preset.addItem(16, new CustomItemStack(SlimefunItems.URANIUM,"&7Fuel Slot", "", "&fThis Slot accepts radioactive Fuel such as:", "&2Uranium"),
+		preset.addItem(10, new CustomItemStack(SlimefunItems.REACTOR_COOLANT_CELL,"&bCoolant Slot", "", "&fThis Slot accepts Coolant Cells","&6Click to clear buffer of Coolant"),
+				ChestMenuUtils.getEmptyClickHandler());
+		preset.addItem(16, new CustomItemStack(SlimefunItems.URANIUM,"&7Fuel Slot", "", "&fThis Slot accepts radioactive Fuel such as:", "&2Uranium","&6Click to clear buffer of Uranium"),
                 ChestMenuUtils.getEmptyClickHandler());
     	
         for (int i : border) {

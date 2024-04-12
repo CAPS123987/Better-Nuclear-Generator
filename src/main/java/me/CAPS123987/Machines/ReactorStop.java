@@ -10,6 +10,7 @@ import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Lightable;
@@ -32,7 +33,7 @@ public class ReactorStop extends SlimefunItem implements ETInventoryBlock {
                 return false;
             }
             public void uniqueTick() {
-                if (uniqueTick == 6) {
+                if (uniqueTick == 2) {
                     uniqueTick = 0;
                     return;
                 }
@@ -42,7 +43,7 @@ public class ReactorStop extends SlimefunItem implements ETInventoryBlock {
 
             @Override
             public void tick(Block b, SlimefunItem item, Config data) {
-                if (uniqueTick != 5) {
+                if (uniqueTick != 1) {
                     return;
                 }
                 Lightable light = (Lightable) b.getBlockData();
@@ -69,6 +70,10 @@ public class ReactorStop extends SlimefunItem implements ETInventoryBlock {
                     menu.replaceExistingItem(slot1, new ItemStack(Material.AIR));
                     menu.replaceExistingItem(slot2, new ItemStack(Material.AIR));
                     BlockStorage.addBlockInfo(b, "status", "OFF");
+                    String pl = BlockStorage.getLocationInfo(b.getLocation(), "player");
+                    if(pl != null) {
+                        Bukkit.getPlayer(pl).sendMessage("Reactor Stopped");
+                    }
                 }
             }
         };
