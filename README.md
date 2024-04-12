@@ -38,7 +38,7 @@ Well done! you built reactor
 
 To generate electricity you need to have stable heat - that means heat around 5500°C 
 
-You can regulate heat by increasing/decreasing coolant pre tick and uran per 500s
+You can regulate heat by increasing/decreasing coolant per tick and uran per 500s
 
 ![image](https://github.com/CAPS123987/Better-Nuclear-Generator/assets/87692752/227ce2c3-e0c0-4ecf-8ba3-67ca4c363afc)
 ![image](https://github.com/CAPS123987/Better-Nuclear-Generator/assets/87692752/25203833-7d11-4ed7-a9d4-429044728d72)
@@ -71,6 +71,13 @@ Lead glass can be replaced with this block
 <img src="https://github.com/CAPS123987/Better-Nuclear-Generator/blob/master/pictures/heatred.png?raw=true" width =40%>
 
 To turn it back to off state you need to mine it and place it back
+
+### Reactor Stop
+When redstone signal given and 128 Graphite is in the stopper it stops the reactor and consumes the Graphite - can be used in combination with Heat Sensor
+
+Must be placed on the top layer in center
+
+<img src="https://github.com/CAPS123987/Better-Nuclear-Generator/blob/master/pictures/stop.png?raw=true" width =40%>
 
 ## Thanks!
 
