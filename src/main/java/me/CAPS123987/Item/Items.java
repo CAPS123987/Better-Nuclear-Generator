@@ -1,15 +1,8 @@
 package me.CAPS123987.Item;
 
-import java.text.DecimalFormat;
-
-
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.inventory.ItemStack;
-
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
+import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.MachineTier;
 import io.github.thebusybiscuit.slimefun4.core.attributes.MachineType;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
@@ -18,6 +11,12 @@ import io.github.thebusybiscuit.slimefun4.utils.LoreBuilder;
 import me.CAPS123987.BetterNuclearReactor.BetterNuclearReactor;
 import me.CAPS123987.IIIDmultiblock.ReactorCore;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
+
+import java.text.DecimalFormat;
 public class Items {
 	
 	
@@ -46,7 +45,7 @@ public class Items {
 			Material.POLISHED_DEEPSLATE,
 			ChatColor.RESET+"Heat Sensor",
 	        "",
-	        "&7Detects heat in the reactor",
+			"&7Detects heat in the reactor",
 	        "&7Outputs redstone signal when tepmerature is too high",
 			"&7You can replace lead glass with this sensor"
 	);
@@ -55,6 +54,7 @@ public class Items {
 			ChatColor.RESET+"Reactor Stop",
 			"",
 			"&7When powered, stops the reactor",
+			"&7Need to be placed on the top layer in the center",
 			"&eConsumes 128 Graphite for one stop"
 	);
 	public static final SlimefunItemStack HEATED_COOLANT = new SlimefunItemStack("HEATED_COOLANT",
@@ -130,6 +130,19 @@ public class Items {
 			Items.LEAD_BLOCK,new ItemStack(Material.GLASS),Items.LEAD_BLOCK,
 			Items.LEAD_BLOCK,Items.LEAD_BLOCK,Items.LEAD_BLOCK
 	};
+
+	public static final ItemStack[] recipe_HEAT_SENSOR= {
+			Items.LEAD_GLASS,Items.LEAD_GLASS,Items.LEAD_GLASS,
+			Items.LEAD_GLASS,new ItemStack(Material.OBSERVER),Items.LEAD_BLOCK,
+			Items.LEAD_GLASS,Items.LEAD_GLASS,Items.LEAD_GLASS
+	};
+
+	public static final ItemStack[] recipe_REACTOR_STOP= {
+			Items.LEAD_BLOCK,Items.LEAD_BLOCK,Items.LEAD_BLOCK,
+			Items.LEAD_BLOCK,new ItemStack(Material.OBSERVER),Items.LEAD_BLOCK,
+			Items.LEAD_BLOCK,Items.LEAD_BLOCK,Items.LEAD_BLOCK
+	};
+
 	public static final ItemStack[] recipe_SUPER_FREEZER= {
 			SlimefunItems.FREEZER_2,SlimefunItems.ELECTRO_MAGNET,SlimefunItems.CARGO_MOTOR,
 			SlimefunItems.REACTOR_COOLANT_CELL,new ItemStack(Material.ICE),SlimefunItems.REACTOR_COOLANT_CELL,
@@ -173,4 +186,5 @@ public class Items {
 			null,new ItemStack(Material.PINK_WOOL),null,
 			null,null,null
 	};
+	public static final RecipeType BETTER_REACTOR = new RecipeType(new NamespacedKey(BetterNuclearReactor.instance, "better_reactor"), REACTOR_CORE, "", "&7After reactor consumes coolant it outputs half of the consumed amount");
 }

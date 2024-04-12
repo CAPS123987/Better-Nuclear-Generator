@@ -22,7 +22,7 @@ public class ReactorStop extends SlimefunItem implements ETInventoryBlock {
     private final int slot2 = 14;
     public final static int[] border = {0,1,2,3,4,5,6,7,8,9,10,11,13,15,16,17,18,19,20,21,22,23,24,25,26};
     public ReactorStop() {
-        super(Items.betterReactor, Items.REACTOR_STOP, RecipeType.ENHANCED_CRAFTING_TABLE, Items.recipe_TEST_ITEM);
+        super(Items.betterReactor, Items.REACTOR_STOP, RecipeType.ENHANCED_CRAFTING_TABLE, Items.recipe_REACTOR_STOP);
         createPreset(this, this::constructMenu);
         addItemHandler(getItemHandler());
     }
