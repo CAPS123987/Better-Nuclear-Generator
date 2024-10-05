@@ -52,7 +52,7 @@ public class BetterNuclearReactor extends JavaPlugin implements SlimefunAddon {
         new SlimefunItem(Items.betterReactor, Items.LEAD_GLASS, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_LEAD_GLASS,new SlimefunItemStack(Items.LEAD_GLASS, 8)).register(this);
         new SlimefunItem(Items.betterReactor, Items.LEAD_BLOCK, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_LEAD_BLOCK).register(this);
         new SlimefunItem(Items.betterReactor, Items.BORIUM_ROD, RecipeType.ENHANCED_CRAFTING_TABLE , Items.recipe_BORIUM_ROD).register(this);
-        new SlimefunItem(Items.betterReactor, Items.REACTOR_HATCH ,Items.BETTER_REACTOR , Items.recipe_REACTOR_HATCH).register(this);
+        new SlimefunItem(Items.betterReactor, Items.REACTOR_HATCH, RecipeType.ENHANCED_CRAFTING_TABLE, Items.recipe_REACTOR_HATCH).register(this);
         new SlimefunItem(Items.betterReactor, Items.HEATED_COOLANT ,RecipeType.NULL, new ItemStack[0]).register(this);
         new Borium().register(this);
         new Graphite().register(this);
