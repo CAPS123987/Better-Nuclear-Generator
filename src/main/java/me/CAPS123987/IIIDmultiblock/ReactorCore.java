@@ -136,7 +136,7 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 						for(int x = -1;x<5;x=x+4) {
 							for(int z = -1;z<5;z=z+4) {
 								for(int y = -1;y<8;y=y+2) {
-									Location Loc = b.getLocation().clone().add(x, y, z);
+									Location Loc = b.getLocation().clone().add(x, y+1, z);
 									
 									
 									AreaEffectCloud Area = (AreaEffectCloud) Loc.getWorld().spawnEntity(Loc, EntityType.AREA_EFFECT_CLOUD);
@@ -372,8 +372,8 @@ public class ReactorCore extends SimpleSlimefunItem<BlockTicker> implements Ener
 					if(largeExplosionFallout) {
 						for(int x = -baseFalloutRadiusPer*uranPer;x<baseFalloutRadiusPer*uranPer;x=x+12) {
 							for(int z = -baseFalloutRadiusPer*uranPer;z<baseFalloutRadiusPer*uranPer;z=z+12) {
-								Location Loc = b.getLocation().clone().add(x, 0, z);							
-								Location AreaLoc = Loc.getWorld().getHighestBlockAt(Loc).getLocation();
+								Location Loc = b.getLocation().clone().add(x, 0, z);
+								Location AreaLoc = Loc.getWorld().getHighestBlockAt(Loc).getLocation().clone().add(0,1,0);
 								
 								AreaEffectCloud Area = (AreaEffectCloud) AreaLoc.getWorld().spawnEntity(AreaLoc, EntityType.AREA_EFFECT_CLOUD);
 								Area.setRadius(12);							
